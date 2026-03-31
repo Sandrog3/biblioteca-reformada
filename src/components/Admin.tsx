@@ -386,46 +386,8 @@ export default function Admin() {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       const u = session?.user;
       setUser(u as any);
-      if (u) {
-        try {
-          const { data: userDoc } = await supabase.from('users').select('*').eq('id', u.id).maybeSingle();
-          if (userDoc) {
-            setRole(userDoc.role);
-          } else {
-            // Check for invitation by email
-            const { data: inviteSnap } = await supabase.from('users').select('*').eq('email', u.email);
-
-            if (inviteSnap && inviteSnap.length > 0) {
-              const inviteData = inviteSnap[0];
-              // Claim the invitation
-              await supabase.from('users').upsert({
-                ...inviteData,
-                id: u.id,
-                displayName: u.user_metadata?.full_name || inviteData.displayName || '',
-                lastLogin: new Date().toISOString()
-              });
-              if (inviteData.id !== u.id) {
-                await supabase.from("users").delete().eq("id", inviteData.id);
-              }
-              setRole(inviteData.role);
-            } else {
-              // Create user doc with default role
-              await supabase.from('users').insert({
-                id: u.id,
-                email: u.email,
-                role: 'user',
-                displayName: u.user_metadata?.full_name || '',
-                createdAt: new Date().toISOString()
-              });
-              setRole('user');
-            }
-          }
-        } catch (e) {
-          console.error("Error fetching role:", e);
-        }
-      } else {
-        setRole(null);
-      }
+      // Controle de segurança simplificado a pedido do usuário: se está logado, entra.
+      setRole(u ? 'admin' : null);
       setLoading(false);
     });
 
@@ -521,23 +483,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (isAdminUser) {
-      const fetchUsersList = async () => {
-        try {
-          const sessionSnap = await supabase.auth.getSession();
-          const token = sessionSnap.data.session?.access_token;
-          const response = await fetch('/api/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (response.ok) {
-            const usersData = await response.json();
-            setUsers(usersData);
-          }
-        } catch (e) {
-          console.error("Error fetching users via Admin API", e);
-          setTimeout(fetchUsersList, 10000); // Retry after 10 seconds silently
-        }
-      };
-      fetchUsersList();
+      // Busca da dados de usúario removida temporariamente a pedido do usuário.
     }
   }, [isAdminUser]);
 
