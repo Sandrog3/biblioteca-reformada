@@ -84,7 +84,9 @@ export default function Admin() {
     themes: "",
     badge: "",
     metaKeywords: "",
-    slug: ""
+    slug: "",
+    isFeatured: false,
+    isOffer: false
   });
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
 
@@ -100,7 +102,9 @@ export default function Admin() {
     videoUrl: "",
     videoKeywords: "",
     metaKeywords: "",
-    badge: ""
+    badge: "",
+    isFeatured: false,
+    isOffer: false
   });
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
@@ -795,7 +799,9 @@ export default function Admin() {
         slug: slug, // Fundamental para rotas
         publisher: newBook.publisher || '',
         year: newBook.year || null,
-        pages: newBook.pages || null
+        pages: newBook.pages || null,
+        is_featured: newBook.isFeatured === true,
+        is_offer: newBook.isOffer === true
       };
 
       if (editingBookId) {
@@ -827,7 +833,9 @@ export default function Admin() {
         themes: "",
         badge: "",
         metaKeywords: "",
-        slug: ""
+        slug: "",
+        isFeatured: false,
+        isOffer: false
       });
     } catch (e: any) {
       console.error("Erro no Supabase:", e);
