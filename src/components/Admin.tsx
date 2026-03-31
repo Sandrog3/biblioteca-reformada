@@ -1820,6 +1820,16 @@ export default function Admin() {
                     <input placeholder="Ex: teologia, puritanos, fé" value={newBook.metaKeywords} onChange={e => setNewBook({ ...newBook, metaKeywords: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#8B5E3C] text-sm" />
                   </div>
                 </div>
+                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <label className="flex items-center gap-3 cursor-pointer p-4 bg-white/5 rounded-xl border border-white/10 hover:border-[#8B5E3C] transition-colors">
+                    <input type="checkbox" checked={newBook.isFeatured} onChange={e => setNewBook({ ...newBook, isFeatured: e.target.checked })} className="w-5 h-5 accent-[#8B5E3C] bg-black border-white/20 rounded" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Destaque Principal na Home (Hero)</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer p-4 bg-white/5 rounded-xl border border-white/10 hover:border-[#8B5E3C] transition-colors">
+                    <input type="checkbox" checked={newBook.isOffer} onChange={e => setNewBook({ ...newBook, isOffer: e.target.checked })} className="w-5 h-5 accent-[#8B5E3C] bg-black border-white/20 rounded" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Marcar como Oferta Especial</span>
+                  </label>
+                </div>
               </div>
               <button onClick={addBook} className="px-8 py-3 bg-[#8B5E3C] rounded-full font-bold uppercase tracking-widest hover:bg-[#D4C3A3] transition-colors">
                 {editingBookId ? "Salvar Alterações" : "Adicionar Livro"}
@@ -2120,6 +2130,16 @@ export default function Admin() {
                     <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1 ml-1">Palavras-chave Produto</label>
                     <input placeholder="Tags do produto" value={newProduct.metaKeywords} onChange={e => setNewProduct({ ...newProduct, metaKeywords: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#8B5E3C] text-sm" />
                   </div>
+                </div>
+                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <label className="flex items-center gap-3 cursor-pointer p-4 bg-white/5 rounded-xl border border-white/10 hover:border-[#8B5E3C] transition-colors">
+                    <input type="checkbox" checked={newProduct.isFeatured} onChange={e => setNewProduct({ ...newProduct, isFeatured: e.target.checked })} className="w-5 h-5 accent-[#8B5E3C] bg-black border-white/20 rounded" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Destaque Principal na Home (Hero)</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer p-4 bg-white/5 rounded-xl border border-white/10 hover:border-[#8B5E3C] transition-colors">
+                    <input type="checkbox" checked={newProduct.isOffer} onChange={e => setNewProduct({ ...newProduct, isOffer: e.target.checked })} className="w-5 h-5 accent-[#8B5E3C] bg-black border-white/20 rounded" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Marcar como Oferta Especial</span>
+                  </label>
                 </div>
               </div>
               <button onClick={addProduct} className="px-8 py-3 bg-[#8B5E3C] rounded-full font-bold uppercase tracking-widest hover:bg-[#D4C3A3] transition-colors">
