@@ -55,6 +55,8 @@ interface Book {
   themes?: string;
   badge?: string;
   metaKeywords?: string;
+  isFeatured?: boolean;
+  isOffer?: boolean;
 }
 
 interface Product {
@@ -234,7 +236,9 @@ export default function LandingPage() {
             targetAudience: b.target_audience || b.targetAudience || b.indicacao || '',
             themes: b.main_themes || b.themes || b.temas || '',
             badge: b.badge || '',
-            metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || ''
+            metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || '',
+            isFeatured: b.is_featured === true,
+            isOffer: b.is_offer === true
           } as Book;
         });
 
@@ -261,6 +265,8 @@ export default function LandingPage() {
         videoKeywords: d.video_keywords || d.videoKeywords || '',
         metaKeywords: d.meta_keywords || d.metaKeywords || '',
         badge: d.badge || '',
+        isFeatured: d.is_featured === true,
+        isOffer: d.is_offer === true,
         createdAt: d.created_at || ''
       })));
     };
