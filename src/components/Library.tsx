@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { db } from '../firebase';
-import { supabase } from '../supabase';
+import { supabase } from '@/src/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingCart, Info, Search, Filter, ChevronRight, Book as BookIcon, X } from 'lucide-react';
+import { ShoppingCart, Info, Search, Filter, ChevronRight, Book as BookIcon, X, ShieldCheck } from 'lucide-react';
 import Header from './Header';
 
 interface Category {
@@ -37,26 +35,47 @@ export default function Library() {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [activeAuthor, setActiveAuthor] = useState<string | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubSettings = onSnapshot(collection(db, 'settings'), (snapshot) => {
-      if (!snapshot.empty) setSettings(snapshot.docs[0].data());
-    });
+    const fetchSettings = async () => {
+      const { data, error } = await supabase.from('settings').select('*').eq('id', 'global').maybeSingle();
+      if (error) console.log('Erro detalhado: settings -', error);
+      if (data && !error) {
+        setSettings({
+          heroTitle: data.hero_title || '',
+          heroSubtitle: data.hero_subtitle || '',
+          heroImage: data.hero_image || '',
+          logoUrl: data.logo_url || '',
+          slogan: data.slogan || '',
+          marqueeItems: data.marquee_items || '',
+          whatsappNumber: data.whatsapp_number || '',
+          metaTitle: data.meta_title || '',
+          metaDescription: data.meta_description || '',
+          metaKeywords: data.meta_keywords || ''
+        });
+      } else {
+        setSettings({});
+      }
+    };
+    fetchSettings();
 
     const fetchCategories = async () => {
       try {
-        const { data, error } = await supabase.from('categorias').select('*');
+        const { data, error } = await supabase.from('categories').select('*');
         if (error || !data) {
-          console.error("Erro ao buscar categorias no Supabase:", error);
+          console.log("Erro detalhado: categories -", error);
+          setFetchError(`Erro no Banco de Dados (${error?.code || 'Desconhecido'}).`);
           setCategories([]);
           return;
         }
         const cats = data.map(d => ({
-          id: String(d.id || d.firebase_id || ''),
+          id: String(d.id  || ''),
           name: d.nome || '',
           slug: d.slug || '',
           description: d.descricao || '',
-          imageUrl: d.url_imagem || '' 
+          imageUrl: d.image_url || d.url_imagem || '' 
         })) as Category[];
         
         setCategories(cats);
@@ -76,52 +95,59 @@ export default function Library() {
     fetchCategories();
 
     return () => {
-      unsubSettings();
+      // Settings fetcher cleanup unnecessary
     };
   }, [categorySlug]);
 
   useEffect(() => {
     const fetchBooks = async () => {
+      setIsLoading(true);
       try {
-        let q = supabase.from('livros').select('*');
+        let q = supabase.from('books').select('*').order('created_at', { ascending: false });
         if (activeCategory) {
-          q = q.eq('categoria_id', activeCategory.id);
+          q = q.eq('category', activeCategory.id);
         }
         
         const { data, error } = await q;
         if (error || !data) {
-          console.error("Erro ao buscar livros no Supabase:", error);
+          console.log("Erro detalhado: books -", error);
+          setFetchError(`Erro no Banco de Dados (${error?.code || 'Desconhecido'}).`);
           setBooks([]);
           return;
         }
         
+        console.log('RAW BOOKS:', data);
+        
         const mappedBooks = data.map((b: any) => {
-          const catName = categories.find(c => c.id === String(b.categoria_id))?.name || 'Sem Categoria';
+          const catName = categories.find(c => c.id === String(b.category || b.categoryId || b.categoria_id))?.name || 'Sem Categoria';
           return {
-            id: String(b.id || b.firebase_id || ''),
-            title: b.titulo || '',
-            author: b.autor || '',
+            id: String(b.id  || ''),
+            title: b.title || b.titulo || '',
+            author: b.author || b.autor || '',
             category: catName,
-            categoryId: b.categoria_id || '',
+            categoryId: b.category || b.categoryId || b.categoria_id || '',
             slug: b.slug || '',
-            imageUrl: b.capa_url || '',
-            videoUrl: b.video_url || '',
-            buyUrl: b.link_compra || '',
-            publisher: b.editora || '',
-            year: b.ano || '',
-            pages: b.paginas || '',
-            synopsis: b.sinopse || '',
-            targetAudience: b.indicacao || '',
-            themes: b.temas || '',
+            imageUrl: b.cover_url || b.imageUrl || b.capa_url_new || '',
+            imageAlt: b.cover_alt || '',
+            videoUrl: b.videoUrl || b.video_url || '',
+            buyUrl: b.amazon_url || b.buyUrl || b.buy_url || b.link_compra || '',
+            publisher: b.publisher || b.editora || '',
+            year: b.year || b.ano || '',
+            pages: b.pages || b.paginas || '',
+            synopsis: b.synopsis || b.sinopse || '',
+            targetAudience: b.target_audience || b.targetAudience || b.indicacao || '',
+            themes: b.main_themes || b.themes || b.temas || '',
             badge: b.badge || '',
-            metaKeywords: b.seo_keywords || ''
+            metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || ''
           } as Book;
         });
         
         setBooks(mappedBooks);
       } catch (err) {
-        console.error("Falha inesperada ao buscar livros:", err);
+        console.log("Erro detalhado (exceção): books -", err);
         setBooks([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -129,13 +155,53 @@ export default function Library() {
   }, [activeCategory, categories]);
 
   const filteredBooks = books.filter(book => {
-    const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         book.author.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = book.title.toLowerCase().includes(searchLower) ||
+                         book.author.toLowerCase().includes(searchLower) ||
+                         book.category.toLowerCase().includes(searchLower);
     const matchesAuthor = !activeAuthor || book.author === activeAuthor;
     return matchesSearch && matchesAuthor;
   });
 
   const uniqueAuthors = Array.from(new Set(books.map(b => b.author))).sort();
+
+  if (isLoading || !settings) return (
+    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center space-y-6">
+      <div className="w-16 h-16 border-4 border-[#8B5E3C]/30 border-t-[#8B5E3C] rounded-full animate-spin"></div>
+      <div className="space-y-3 flex flex-col items-center">
+        <div className="h-6 w-48 bg-white/10 rounded-lg animate-pulse"></div>
+        <div className="h-4 w-32 bg-white/5 rounded-lg animate-pulse"></div>
+        <p className="text-[#8B5E3C] tracking-[0.2em] font-serif uppercase text-sm mt-4 animate-pulse">Consultando Acervo...</p>
+      </div>
+    </div>
+  );
+
+  if (fetchError) return (
+    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center px-6 text-center space-y-8 animate-in fade-in duration-700">
+      <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+        <ShieldCheck className="w-12 h-12 text-red-500" />
+      </div>
+      <div>
+        <h2 className="text-3xl md:text-5xl font-serif text-white mb-2">Ops! Acesso Negado</h2>
+        <p className="text-[#8B5E3C] tracking-[0.2em] font-serif uppercase text-xs">Acesso Restrito pelo Banco de Dados</p>
+      </div>
+      <div className="max-w-lg mx-auto bg-white/5 p-6 rounded-2xl border border-white/10">
+        <p className="text-white/70 leading-relaxed mb-4">
+          Ocorreu um erro ao consultar o acervo da biblioteca. As configurações de segurança atuais do seu banco de dados (RLS) estão bloqueando a leitura pública desta tabela (Erro 401/42501).
+        </p>
+        <p className="text-white/90 text-sm bg-black/50 p-4 rounded-lg">
+          <strong className="text-[#D4C3A3]">Para corrigir agora mesmo:</strong><br/>
+          Copie e cole o conteúdo do arquivo <code>migration_fix.sql</code> no seu SQL Editor do Supabase e clique em <strong>Run</strong>.
+        </p>
+      </div>
+      <button 
+        onClick={() => window.location.reload()}
+        className="mt-8 px-10 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+      >
+        Tentar Novamente
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#050505] text-[#F5F5F5] font-sans">
@@ -339,7 +405,8 @@ export default function Library() {
                     >
                       <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-6 shadow-2xl">
                         <img 
-                          src={book.imageUrl} 
+                          src={book.imageUrl || '/placeholder-book.jpg'} 
+                          onError={(e) => { e.currentTarget.src = '/placeholder-book.jpg'; }}
                           alt={book.title} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                           referrerPolicy="no-referrer"

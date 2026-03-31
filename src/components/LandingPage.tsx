@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { collection, doc, onSnapshot, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../firebase';
 import { supabase } from '../supabase';
 import { BookMarked, ShieldCheck, Users, Layers, ArrowLeft, ArrowRight, ShoppingCart, Info, Instagram, Youtube, Facebook, Check, Loader2, X, Calendar, Book as BookIcon, Hash, User, Building2, Target, Tag, ExternalLink, Menu, Play, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -86,6 +84,8 @@ export default function LandingPage() {
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     let title = settings?.metaTitle || settings?.heroTitle || "Sandro G. - Tradição Reformada";
@@ -122,63 +122,45 @@ export default function LandingPage() {
     updateMeta('keywords', keywords);
   }, [settings, selectedPost, selectedBook, selectedProduct]);
 
-  enum OperationType {
-    CREATE = 'create',
-    UPDATE = 'update',
-    DELETE = 'delete',
-    LIST = 'list',
-    GET = 'get',
-    WRITE = 'write',
-  }
 
-  const handleFirestoreError = (error: any, operationType: OperationType, path: string | null) => {
-    const errInfo = {
-      error: error instanceof Error ? error.message : String(error),
-      operationType,
-      path,
-      authInfo: {
-        userId: auth.currentUser?.uid || '',
-        email: auth.currentUser?.email || '',
-        emailVerified: auth.currentUser?.emailVerified || false,
-        isAnonymous: auth.currentUser?.isAnonymous || false,
-        tenantId: auth.currentUser?.tenantId || '',
-        providerInfo: auth.currentUser?.providerData.map(provider => ({
-          providerId: provider.providerId,
-          displayName: provider.displayName || '',
-          email: provider.email || '',
-          photoUrl: provider.photoURL || ''
-        })) || []
-      }
-    };
-    console.error('Firestore Error: ', JSON.stringify(errInfo));
-    throw new Error(JSON.stringify(errInfo));
-  };
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || submitting) return;
     setSubmitting(true);
     try {
-      await addDoc(collection(db, 'subscriptions'), {
+      await supabase.from('subscriptions').insert({
         email,
-        subscribedAt: serverTimestamp()
+        created_at: new Date().toISOString()
       });
       setSubscribed(true);
       setEmail('');
       setTimeout(() => setSubscribed(false), 5000);
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'subscriptions');
+      console.error("Erro ao assinar newsletter:", error);
     } finally {
       setSubmitting(false);
     }
   };
 
   useEffect(() => {
-    const unsubSettings = onSnapshot(doc(db, 'settings', 'global'), (doc) => {
-      if (doc.exists()) {
-        setSettings(doc.data() as SiteSettings);
+    const fetchSettings = async () => {
+      const { data, error } = await supabase.from('settings').select('*').eq('id', 'global').maybeSingle();
+      if (error) console.log('Erro detalhado: settings -', error);
+      if (data && !error) {
+        setSettings({
+          heroTitle: data.hero_title || '',
+          heroSubtitle: data.hero_subtitle || '',
+          heroImage: data.hero_image || '',
+          logoUrl: data.logo_url || '',
+          slogan: data.slogan || '',
+          marqueeItems: data.marquee_items || '',
+          whatsappNumber: data.whatsapp_number || '',
+          metaTitle: data.meta_title || '',
+          metaDescription: data.meta_description || '',
+          metaKeywords: data.meta_keywords || ''
+        });
       } else {
-        // Default settings if none exist
         setSettings({
           heroTitle: "Livros Cristãos Baseadas No Ensino Reformado Com Fidelidade às Escrituras",
           heroSubtitle: "Um bom livro cristão é aquele que conduz o leitor de volta à Palavra de Deus e o ajuda a amar mais a Cristo.",
@@ -188,61 +170,159 @@ export default function LandingPage() {
           whatsappNumber: "5548991709438"
         });
       }
-    }, (error) => handleFirestoreError(error, OperationType.GET, 'settings/global'));
+    };
+    // fetchSettings postponed to loadAll
 
-    const unsubPosts = onSnapshot(query(collection(db, 'posts'), orderBy('createdAt', 'desc')), (snapshot) => {
-      setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Post)));
-    }, (error) => handleFirestoreError(error, OperationType.GET, 'posts'));
-
+    const fetchPosts = async () => {
+      const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+      if (error) console.log('Erro detalhado: posts -', error);
+      if (data) {
+        setPosts(data.map((p: any) => ({ 
+          id: String(p.id || ''),
+          title: p.title || '',
+          category: p.category || '',
+          excerpt: p.excerpt || '',
+          content: p.content || '',
+          imageUrl: p.image_url || p.imageUrl || '',
+          imageAlt: p.image_alt || p.imageAlt || '',
+          videoUrl: p.video_url || p.videoUrl || '',
+          videoKeywords: p.video_keywords || p.videoKeywords || '',
+          metaKeywords: p.meta_keywords || p.metaKeywords || '',
+          createdAt: { 
+            seconds: Math.floor(new Date(p.created_at || Date.now()).getTime() / 1000),
+            nanoseconds: 0
+          } 
+        })));
+      }
+    };
+    // fetchPosts postponed to loadAll
     const fetchBooks = async () => {
       try {
-        const { data, error } = await supabase.from('livros').select('*');
-        if (error || !data) {
-          console.error("Erro Supabase livros na Landing:", error);
+        const [booksResponse, catsResponse] = await Promise.all([
+          supabase.from('books').select('*').order('created_at', { ascending: false }),
+          supabase.from('categories').select('*')
+        ]);
+        
+        if (booksResponse.error || catsResponse.error) {
+          console.log('Erro detalhado: books/categories -', booksResponse.error || catsResponse.error);
+        }
+        
+        if (!booksResponse.data) {
           setBooks([]);
           return;
         }
 
-        const mappedBooks = data.map((b: any) => ({
-            id: String(b.id || b.firebase_id || ''),
-            title: b.titulo || '',
-            author: b.autor || '',
-            category: 'N/A', 
-            categoryId: b.categoria_id || '',
-            slug: b.slug || '',
-            imageUrl: b.capa_url || '',
-            videoUrl: b.video_url || '',
-            buyUrl: b.link_compra || '',
-            publisher: b.editora || '',
-            year: b.ano || '',
-            pages: b.paginas || '',
-            synopsis: b.sinopse || '',
-            targetAudience: b.indicacao || '',
-            themes: b.temas || '',
-            badge: b.badge || '',
-            metaKeywords: b.seo_keywords || ''
-        })) as Book[];
+        const catsData = catsResponse.data || [];
+
+        const mappedBooks = booksResponse.data.map((b: any) => {
+            const catName = catsData.find(c => String(c.id) === String(b.category || b.categoryId || b.categoria_id))?.nome || 'Sem Categoria';
+            return {
+              id: String(b.id || ''),
+              title: b.title || b.titulo || '',
+              author: b.author || b.autor || '',
+              category: catName, 
+              categoryId: b.category || b.categoryId || b.categoria_id || '',
+              slug: b.slug || '',
+              imageUrl: b.cover_url || b.imageUrl || b.capa_url_new || '',
+              imageAlt: b.cover_alt || '',
+              videoUrl: b.videoUrl || b.video_url || '',
+              buyUrl: b.amazon_url || b.buyUrl || b.buy_url || b.link_compra || '',
+              publisher: b.publisher || b.editora || '',
+              year: b.year || b.ano || '',
+              pages: b.pages || b.paginas || '',
+              synopsis: b.synopsis || b.sinopse || '',
+              targetAudience: b.target_audience || b.targetAudience || b.indicacao || '',
+              themes: b.main_themes || b.themes || b.temas || '',
+              badge: b.badge || '',
+              metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || ''
+            } as Book;
+        });
 
         setBooks(mappedBooks);
       } catch (err) {
-        console.error("Falha inesperada:", err);
-        setBooks([]);
+        console.error("Erro geral na busca de livros da Landing:", err);
       }
     };
-    fetchBooks();
+    // fetchBooks postponed to loadAll
 
-    const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
-      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
-    }, (error) => handleFirestoreError(error, OperationType.GET, 'products'));
+
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      if (error) console.log('Erro detalhado: products -', error);
+      if (data) setProducts(data.map((d: any) => ({
+          id: String(d.id || ''),
+          title: d.title || '',
+          description: d.description || '',
+          characteristics: d.characteristics || [],
+          buyUrl: d.buy_url || d.buyUrl || '',
+          images: d.images || [],
+          imageAlt: d.image_alt || d.imageAlt || '',
+          videoUrl: d.video_url || d.videoUrl || '',
+          videoKeywords: d.video_keywords || d.videoKeywords || '',
+          metaKeywords: d.meta_keywords || d.metaKeywords || '',
+          badge: d.badge || '',
+          createdAt: d.created_at || ''
+        })));
+    };
+    // fetchProducts postponed to loadAll
+
+    const loadAll = async () => {
+      setIsLoading(true);
+      setFetchError(null);
+      await Promise.all([
+        fetchSettings(),
+        fetchPosts(),
+        fetchBooks(),
+        fetchProducts()
+      ]);
+      setIsLoading(false);
+    };
+    loadAll();
 
     return () => {
-      unsubSettings();
-      unsubPosts();
-      unsubProducts();
+      // Nothing to cleanup
     };
   }, []);
 
-  if (!settings) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">Carregando...</div>;
+  if (isLoading) return (
+    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center space-y-6">
+      <div className="w-16 h-16 border-4 border-[#8B5E3C]/30 border-t-[#8B5E3C] rounded-full animate-spin"></div>
+      <div className="space-y-3 flex flex-col items-center">
+        <div className="h-6 w-48 bg-white/10 rounded-lg animate-pulse"></div>
+        <div className="h-4 w-32 bg-white/5 rounded-lg animate-pulse"></div>
+        <p className="text-[#8B5E3C] tracking-[0.2em] font-serif uppercase text-sm mt-4 animate-pulse">Preparando Biblioteca...</p>
+      </div>
+    </div>
+  );
+
+  if (fetchError) return (
+    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center px-6 text-center space-y-8 animate-in fade-in duration-700">
+      <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+        <ShieldCheck className="w-12 h-12 text-red-500" />
+      </div>
+      <div>
+        <h2 className="text-3xl md:text-5xl font-serif text-white mb-2">Ops! Acesso Negado</h2>
+        <p className="text-[#8B5E3C] tracking-[0.2em] font-serif uppercase text-xs">Aviso de Segurança (Código 42501)</p>
+      </div>
+      <div className="max-w-lg mx-auto bg-white/5 p-6 rounded-2xl border border-white/10">
+        <p className="text-white/70 leading-relaxed mb-4">
+          Ocorreu um erro ao carregar os dados do painel. As configurações de segurança atuais do seu banco de dados (RLS) estão bloqueando o acesso público à biblioteca.
+        </p>
+        <p className="text-white/90 text-sm bg-black/50 p-4 rounded-lg">
+          <strong className="text-[#D4C3A3]">Para corrigir agora mesmo:</strong><br/>
+          Vá ao seu painel do Supabase, acesse o módulo de <strong>SQL Editor</strong>, cole todo o conteúdo do arquivo <code>migration_fix.sql</code> e aperte em <strong>Run</strong>.
+        </p>
+      </div>
+      <button 
+        onClick={() => window.location.reload()}
+        className="mt-8 px-10 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+      >
+        Tentar Novamente
+      </button>
+    </div>
+  );
+
+  if (!settings) return null;
 
   // Safe Fallback Logic
   const heroTitle = String(settings.heroTitle || "Livros Cristãos Baseadas No Ensino Reformado Com Fidelidade às Escrituras");
@@ -428,7 +508,7 @@ export default function LandingPage() {
               >
                 {/* Book Card */}
                 <div className="relative aspect-[3/4] overflow-hidden rounded-2xl mb-6 glass border-white/5 group-hover:border-[#8B5E3C]/30 transition-all duration-500">
-                  <img src={book.imageUrl || undefined} alt={book.imageAlt || book.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40" referrerPolicy="no-referrer" />
+                  <img src={book.imageUrl || '/placeholder-book.jpg'} onError={(e) => { e.currentTarget.src = '/placeholder-book.jpg'; }} alt={book.imageAlt || book.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40" referrerPolicy="no-referrer" />
                   
                   {/* Badge */}
                   {book.badge && (

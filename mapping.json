@@ -1,0 +1,8 @@
+{
+  "livros": {
+    "https://m.media-amazon.com/images/S/aplus-media/vc/06c5991f-fead-46eb-9fea-7e99fb913748._CR0,0,300,400_PT0_SX300__.png": "https://knvporkxtdegochxazor.supabase.co/storage/v1/object/public/biblioteca-public/books/capas/a058d3cd-d91a-4e0c-8167-6c505a1e3800.jpg",
+    "https://bibliotecareformada.com/classico-teologia-reformada-john-owen-a-morte-da-morte.webp": "https://knvporkxtdegochxazor.supabase.co/storage/v1/object/public/biblioteca-public/books/capas/9bb8d393-a208-45e7-bebd-55cf5590f2c4.jpg",
+    "https://bibliotecareformada.com/o-conhecimento-de-deus-ji-packer.webp": "https://knvporkxtdegochxazor.supabase.co/storage/v1/object/public/biblioteca-public/books/capas/ad084e20-456a-4ab2-8a52-47293948f10a.jpg",
+    "https://bibliotecareformada.com/A-Cruz-de-Cristo.webp": "https://knvporkxtdegochxazor.supabase.co/storage/v1/object/public/biblioteca-public/books/capas/466e8086-913e-4b08-866d-4442893052ac.jpg"
+  }
+}

@@ -17,7 +17,7 @@ export async function processImage(file: File, options: ProcessOptions = {}): Pr
 
   // 1. Compression first to handle large files
   const compressionOptions = {
-    maxSizeMB: 0.1, // Aim for 100KB to be safe with Firestore Base64 limits (1MB per doc)
+    maxSizeMB: 0.1, // Aim for 100KB to be safe with Database Base64 limits
     maxWidthOrHeight: Math.max(maxWidth, maxHeight),
     useWebWorker: true,
   };

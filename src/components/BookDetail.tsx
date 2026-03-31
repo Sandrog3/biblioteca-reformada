@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, where, limit } from 'firebase/firestore';
-import { db } from '../firebase';
 import { supabase } from '../supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
@@ -36,77 +34,97 @@ export default function BookDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubSettings = onSnapshot(collection(db, 'settings'), (snapshot) => {
-      if (!snapshot.empty) setSettings(snapshot.docs[0].data());
-    });
+    const fetchSettings = async () => {
+      const { data, error } = await supabase.from('settings').select('*').eq('id', 'global').maybeSingle();
+      if (error) console.log('Erro detalhado: settings -', error);
+      if (data && !error) {
+        setSettings({
+          heroTitle: data.hero_title || '',
+          heroSubtitle: data.hero_subtitle || '',
+          heroImage: data.hero_image || '',
+          logoUrl: data.logo_url || '',
+          slogan: data.slogan || '',
+          marqueeItems: data.marquee_items || '',
+          whatsappNumber: data.whatsapp_number || '',
+          metaTitle: data.meta_title || '',
+          metaDescription: data.meta_description || '',
+          metaKeywords: data.meta_keywords || ''
+        });
+      } else {
+        setSettings({});
+      }
+    };
+    fetchSettings();
 
     const fetchBookData = async () => {
       setLoading(true);
       try {
         const { data: bookData, error: bookError } = await supabase
-          .from('livros')
+          .from('books')
           .select('*')
           .eq('slug', slug)
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (bookError || !bookData) {
-          console.error("Erro ao buscar livro no Supabase:", bookError);
+          console.log("Erro detalhado: book -", bookError);
           setBook(null);
           setLoading(false);
           return;
         }
 
         let catName = 'Sem Categoria';
-        if (bookData.categoria_id) {
+        const rawCategoryId = bookData.category || bookData.categoryId || bookData.category_id || bookData.categoria_id;
+        if (rawCategoryId) {
           const { data: catData } = await supabase
-            .from('categorias')
+            .from('categories')
             .select('nome')
-            .eq('id', bookData.categoria_id)
-            .single();
+            .eq('id', rawCategoryId)
+            .maybeSingle();
           if (catData) catName = catData.nome || 'Sem Categoria';
         }
 
         const mappedBook = {
-            id: String(bookData.id || bookData.firebase_id || ''),
-            title: bookData.titulo || '',
-            author: bookData.autor || '',
-            category: catName,
-            categoryId: bookData.categoria_id || '',
-            slug: bookData.slug || '',
-            imageUrl: bookData.capa_url || '',
-            videoUrl: bookData.video_url || '',
-            buyUrl: bookData.link_compra || '',
-            publisher: bookData.editora || '',
-            year: bookData.ano || '',
-            pages: bookData.paginas || '',
-            synopsis: bookData.sinopse || '',
-            targetAudience: bookData.indicacao || '',
-            themes: bookData.temas || '',
-            badge: bookData.badge || '',
-            metaKeywords: bookData.seo_keywords || ''
+          id: String(bookData.id || ''),
+          title: bookData.title || bookData.titulo || '',
+          author: bookData.author || bookData.autor || '',
+          category: catName,
+          categoryId: rawCategoryId || bookData.category || '',
+          slug: bookData.slug || '',
+          imageUrl: bookData.cover_url || bookData.capa_url_new || '',
+          imageAlt: bookData.cover_alt || '',
+          videoUrl: bookData.video_url || '',
+          buyUrl: bookData.amazon_url || bookData.link_compra || '',
+          publisher: bookData.editora || '',
+          year: bookData.ano || '',
+          pages: bookData.paginas || '',
+          synopsis: bookData.synopsis || bookData.sinopse || '',
+          targetAudience: bookData.target_audience || bookData.indicacao || '',
+          themes: bookData.main_themes || bookData.temas || '',
+          badge: bookData.badge || '',
+          metaKeywords: bookData.seo_keywords || ''
         } as Book;
 
         setBook(mappedBook);
 
-        if (mappedBook.categoryId) {
+        if (rawCategoryId) {
           const { data: relatedData, error: relatedError } = await supabase
-            .from('livros')
+            .from('books')
             .select('*')
-            .eq('categoria_id', mappedBook.categoryId)
+            .or(`categoryId.eq.${rawCategoryId},category_id.eq.${rawCategoryId},categoria_id.eq.${rawCategoryId}`)
             .neq('slug', slug)
             .limit(4);
 
           if (!relatedError && relatedData) {
             const mappedRelated = relatedData.map((b: any) => ({
-              id: String(b.id || b.firebase_id || ''),
-              title: b.titulo || '',
-              author: b.autor || '',
+              id: String(b.id || ''),
+              title: b.title || b.titulo || '',
+              author: b.author || b.autor || '',
               category: catName,
-              categoryId: b.categoria_id || '',
+              categoryId: b.categoryId || b.category_id || b.categoria_id || '',
               slug: b.slug || '',
-              imageUrl: b.capa_url || '',
-              buyUrl: b.link_compra || '',
+              imageUrl: b.cover_url || b.imageUrl || b.capa_url_new || '',
+              buyUrl: b.buyUrl || b.buy_url || b.link_compra || '',
             })) as Book[];
             setRelatedBooks(mappedRelated);
           }
@@ -121,7 +139,7 @@ export default function BookDetail() {
     fetchBookData();
 
     return () => {
-      unsubSettings();
+      // Nothing to cleanup on fetch
     };
   }, [slug]);
 
@@ -143,14 +161,15 @@ export default function BookDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           {/* Left: Image and Quick Info */}
           <div className="lg:col-span-5 space-y-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/50 border border-white/5"
             >
-              <img 
-                src={book.imageUrl} 
-                alt={book.title} 
+              <img
+                src={book.imageUrl || '/placeholder-book.jpg'}
+                onError={(e) => { e.currentTarget.src = '/placeholder-book.jpg'; }}
+                alt={book.title}
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -167,10 +186,10 @@ export default function BookDetail() {
                   <Play className="text-[#8B5E3C] w-5 h-5 fill-current" /> Trailer da Obra
                 </h3>
                 <div className="aspect-video rounded-xl overflow-hidden shadow-lg">
-                  <iframe 
-                    src={getYouTubeEmbedUrl(book.videoUrl)} 
-                    className="w-full h-full" 
-                    allowFullScreen 
+                  <iframe
+                    src={getYouTubeEmbedUrl(book.videoUrl)}
+                    className="w-full h-full"
+                    allowFullScreen
                     title="Trailer"
                   />
                 </div>
@@ -235,9 +254,9 @@ export default function BookDetail() {
             </div>
 
             <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row gap-6">
-              <a 
-                href={book.buyUrl} 
-                target="_blank" 
+              <a
+                href={book.buyUrl}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-5 bg-[#8B5E3C] text-white rounded-2xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 hover:bg-[#D4C3A3] transition-all duration-300 shadow-xl shadow-[#8B5E3C]/20"
               >
@@ -265,7 +284,7 @@ export default function BookDetail() {
               {relatedBooks.map(b => (
                 <Link key={b.id} to={`/livro/${b.slug}`} className="glass p-4 rounded-3xl group hover:border-[#8B5E3C]/30 transition-all duration-500">
                   <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-4">
-                    <img src={b.imageUrl} alt={b.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" referrerPolicy="no-referrer" />
+                    <img src={b.imageUrl || '/placeholder-book.jpg'} onError={(e) => { e.currentTarget.src = '/placeholder-book.jpg'; }} alt={b.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" referrerPolicy="no-referrer" />
                   </div>
                   <h4 className="font-serif text-lg mb-1 group-hover:text-[#8B5E3C] transition-colors line-clamp-1">{b.title}</h4>
                   <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">{b.author}</p>
