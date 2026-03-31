@@ -162,7 +162,7 @@ export default function LandingPage() {
         });
       } else {
         setSettings({
-          heroTitle: "Livros Cristãos Baseadas No Ensino Reformado Com Fidelidade às Escrituras",
+          heroTitle: "Livros Cristãos Baseados no Ensino Reformado Com Fidelidade às Escrituras",
           heroSubtitle: "Um bom livro cristão é aquele que conduz o leitor de volta à Palavra de Deus e o ajuda a amar mais a Cristo.",
           heroImage: "https://images.unsplash.com/photo-1507738911748-9c7846274f3d?q=80&w=2070&auto=format&fit=crop",
           marqueeItems: "Teologia Reformada, Clássicos Cristãos, Vida Devocional, Estudo Bíblico, Doutrina Saudável, Amadurecimento Espiritual",
@@ -325,7 +325,7 @@ export default function LandingPage() {
   if (!settings) return null;
 
   // Safe Fallback Logic
-  const heroTitle = String(settings.heroTitle || "Livros Cristãos Baseadas No Ensino Reformado Com Fidelidade às Escrituras");
+  const heroTitle = String(settings.heroTitle || "Livros Cristãos Baseados no Ensino Reformado Com Fidelidade às Escrituras");
   const heroSubtitle = String(settings.heroSubtitle || "Um bom livro cristão é aquele que conduz o leitor de volta à Palavra de Deus e o ajuda a amar mais a Cristo.");
   const heroImage = settings.heroImage || "https://images.unsplash.com/photo-1507738911748-9c7846274f3d?q=80&w=2070&auto=format&fit=crop";
   const logoUrl = settings.logoUrl || "https://seudominio.com/imagens/logo.png";
@@ -337,12 +337,7 @@ export default function LandingPage() {
 
   // Meia Dourada Styling Logic
   const styledHeroTitle = heroTitle
-    .replace('Palavra', '<span class="italic text-[#8B5E3C]">Palavra</span>')
-    .replace('Leitor.', '<span class="gradient-text">Leitor.</span>')
-    .replace('Biblioteca', '<span class="italic text-[#8B5E3C]">Biblioteca</span>')
-    .replace('Reformada', '<span class="gradient-text">Reformada</span>')
-    .replace('Reformado', '<span class="italic text-[#8B5E3C]">Reformado</span>')
-    .replace('Escrituras', '<span class="gradient-text">Escrituras</span>');
+    .replace('Reformado', '<span class="italic text-[#A07855]">Reformado</span>');
 
   // ESTANTE
   const safeProducts = products.map(p => ({
@@ -377,7 +372,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.1] mb-8 tracking-tighter"
+              className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.1] mb-8 tracking-tighter text-white break-words"
               dangerouslySetInnerHTML={{ __html: styledHeroTitle }}
             />
             
