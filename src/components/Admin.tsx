@@ -870,7 +870,9 @@ export default function Admin() {
       themes: book.themes || "",
       badge: book.badge || "",
       metaKeywords: book.metaKeywords || "",
-      slug: book.slug || ""
+      slug: book.slug || "",
+      isFeatured: false,
+      isOffer: false
     });
     // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -895,7 +897,9 @@ export default function Admin() {
       themes: "",
       badge: "",
       metaKeywords: "",
-      slug: ""
+      slug: "",
+      isFeatured: false,
+      isOffer: false
     });
   };
 
@@ -932,7 +936,9 @@ export default function Admin() {
         video_url: newProduct.videoUrl,
         video_keywords: newProduct.videoKeywords,
         meta_keywords: newProduct.metaKeywords,
-        badge: newProduct.badge
+        badge: newProduct.badge,
+        is_featured: newProduct.isFeatured === true,
+        is_offer: newProduct.isOffer === true
       };
 
       if (editingProductId) {
@@ -953,7 +959,9 @@ export default function Admin() {
         videoUrl: "",
         videoKeywords: "",
         metaKeywords: "",
-        badge: ""
+        badge: "",
+        isFeatured: false,
+        isOffer: false
       });
     } catch (e: any) {
       showNotification(`Erro ao salvar produto: ${e.message || e.code || 'Desconhecido'}`, 'error');
@@ -972,7 +980,9 @@ export default function Admin() {
       videoUrl: product.videoUrl || "",
       videoKeywords: product.videoKeywords || "",
       metaKeywords: product.metaKeywords || "",
-      badge: product.badge || ""
+      badge: product.badge || "",
+      isFeatured: product.is_featured || product.isFeatured || false,
+      isOffer: product.is_offer || product.isOffer || false
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -989,7 +999,9 @@ export default function Admin() {
       videoUrl: "",
       videoKeywords: "",
       metaKeywords: "",
-      badge: ""
+      badge: "",
+      isFeatured: false,
+      isOffer: false
     });
   };
 
