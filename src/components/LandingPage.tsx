@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
-import { BookMarked, ShieldCheck, Users, Layers, ArrowLeft, ArrowRight, ShoppingCart, Info, Instagram, Youtube, Facebook, Check, Loader2, X, Calendar, Book as BookIcon, Hash, User, Building2, Target, Tag, ExternalLink, Menu, Play, Clock } from 'lucide-react';
+import { BookMarked, ShieldCheck, Users, Layers, ArrowLeft, ArrowRight, ShoppingCart, Info, Instagram, Youtube, Facebook, Check, Loader2, X, Calendar, Book as BookIcon, Hash, User, Building2, Target, Tag, ExternalLink, Menu, Play, Clock, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Markdown from 'react-markdown';
@@ -350,61 +350,112 @@ export default function LandingPage() {
     characteristics: Array.isArray(p.characteristics) ? p.characteristics : (typeof p.characteristics === 'string' ? (p.characteristics as string).split('\n').filter(c => c.trim()) : [])
   }));
 
+  const featuredBook: Book | undefined = books.find(b => b.isFeatured) || books[0];
+
   return (
     <div className="bg-[#050505] text-[#F5F5F5] font-sans overflow-x-hidden">
       <Header settings={settings} />
 
-      {/* HERO SECTION */}
-      <section id="home" className="relative min-h-[85vh] md:min-h-screen flex items-start md:items-center pt-44 md:pt-48 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <motion.img
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
-            src={heroImage || undefined}
-            alt="Library Background"
-            className="w-full h-full object-cover opacity-30"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.1] mb-8 tracking-tighter text-white break-words"
+      {/* HERO SECTION (VITRINE DE DESTAQUE) */}
+      <section id="home" className="relative min-h-[85vh] md:min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+        {/* Fundo Escuro Limpo com Glow Sutil */}
+        <div className="absolute inset-0 bg-[#050505] z-0"></div>
+        {featuredBook && (
+           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#8B5E3C]/10 rounded-full blur-[150px] z-0 pointer-events-none"></div>
+        )}
+        
+        <div className="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12 md:gap-20">
+          
+          {/* Lado Esquerdo: Capa do Livro em Destaque */}
+          {featuredBook ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, x: -50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="w-full md:w-1/3 flex justify-center md:justify-center md:pl-10 relative"
             >
-              Livros Cristãos Baseados no Ensino <span className="italic text-[#A07855]">Reformado</span> Com Fidelidade às Escrituras
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="text-xl md:text-3xl text-white/60 font-light max-w-2xl mb-12 leading-relaxed"
-            >
-              {heroSubtitle}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center gap-6"
-            >
-              <a href="#livros" className="cta-pulse px-10 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform">
-                Explorar Acervo
-              </a>
-              <a href="#estantes" className="px-10 py-5 glass text-white font-bold uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors">
-                Produtos Destaques
-              </a>
+              <div className="relative z-10 w-64 md:w-80 aspect-[3/4] rounded-2xl shadow-[0_20px_60px_-15px_rgba(139,94,60,0.6)] border border-white/5 group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#8B5E3C] to-[#D4C3A3] rounded-2xl blur opacity-25 group-hover:opacity-60 transition duration-1000"></div>
+                <img 
+                  src={featuredBook.imageUrl || '/placeholder-book.jpg'} 
+                  alt={featuredBook.imageAlt || `Capa do livro ${featuredBook.title}`} 
+                  className="relative w-full h-full object-cover rounded-2xl z-10 group-hover:scale-[1.02] transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute -top-4 -right-4 z-20 bg-gradient-to-r from-[#8B5E3C] to-[#D4C3A3] text-[#050505] font-bold uppercase tracking-widest text-[10px] px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
+                  <Star className="w-3 h-3 fill-current" /> Destaque
+                </div>
+              </div>
             </motion.div>
+          ) : (
+             <div className="w-full md:w-1/3 flex justify-center md:pl-10 relative">
+                <div className="w-64 md:w-80 aspect-[3/4] bg-white/5 rounded-2xl animate-pulse"></div>
+             </div>
+          )}
+
+          {/* Lado Direito: Informações SEO e Call to Action */}
+          <div className="w-full md:w-2/3 flex flex-col items-center md:items-start text-center md:text-left pt-6 md:pt-0">
+            <motion.h1 
+               initial={{ opacity: 0, y: -20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: 0.3, duration: 0.6 }}
+               className="text-xs md:text-sm font-bold uppercase tracking-[0.3em] text-[#8B5E3C] mb-4"
+            >
+               Acervo Recomendado
+            </motion.h1>
+            
+            {featuredBook ? (
+               <>
+                 <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.8 }}
+                    className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-[1.1] mb-6 text-white"
+                 >
+                    {featuredBook.title}
+                 </motion.h2>
+
+                 <motion.p
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   transition={{ delay: 0.6, duration: 0.8 }}
+                   className="text-white/60 text-lg md:text-xl font-light mb-8 max-w-2xl leading-relaxed"
+                 >
+                   <strong className="text-white">Por {featuredBook.author}.</strong><br/><br/>
+                   {featuredBook.synopsis ? (featuredBook.synopsis.length > 250 ? featuredBook.synopsis.slice(0, 247) + '...' : featuredBook.synopsis) : "Explore esta obra fundamental para o crescimento e maturidade na fé cristã clássica e reformada."}
+                 </motion.p>
+                 
+                 <motion.div
+                   initial={{ opacity: 0, y: 20 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 0.8, duration: 0.5 }}
+                   className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto"
+                 >
+                   <Link 
+                     to={`/livro/${featuredBook.slug}`}
+                     className="w-full sm:w-auto px-8 py-4 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest text-xs rounded-full shadow-lg shadow-[#8B5E3C]/20 hover:scale-105 transition-transform flex items-center justify-center gap-2"
+                   >
+                     Ver Detalhes do Livro <ArrowRight className="w-4 h-4" />
+                   </Link>
+                   {featuredBook.buyUrl && (
+                     <a 
+                       href={featuredBook.buyUrl} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="w-full sm:w-auto px-8 py-4 glass text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                     >
+                       <ShoppingCart className="w-4 h-4" /> Comprar na Amazon
+                     </a>
+                   )}
+                 </motion.div>
+               </>
+            ) : (
+                <div className="space-y-4 w-full max-w-lg">
+                   <div className="h-12 bg-white/5 rounded-lg animate-pulse w-3/4"></div>
+                   <div className="h-4 bg-white/5 rounded-lg animate-pulse mt-8 w-1/4"></div>
+                   <div className="h-24 bg-white/5 rounded-lg animate-pulse mt-2"></div>
+                </div>
+            )}
           </div>
         </div>
       </section>

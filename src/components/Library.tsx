@@ -71,15 +71,15 @@ export default function Library() {
           return;
         }
         const cats = data.map(d => ({
-          id: String(d.id  || ''),
+          id: String(d.id || ''),
           name: d.nome || '',
           slug: d.slug || '',
           description: d.descricao || '',
-          imageUrl: d.image_url || d.url_imagem || '' 
+          imageUrl: d.image_url || d.url_imagem || ''
         })) as Category[];
-        
+
         setCategories(cats);
-        
+
         if (categorySlug) {
           const active = cats.find(c => c.slug === categorySlug);
           if (active) setActiveCategory(active);
@@ -91,7 +91,7 @@ export default function Library() {
         setCategories([]);
       }
     };
-    
+
     fetchCategories();
 
     return () => {
@@ -107,7 +107,7 @@ export default function Library() {
         if (activeCategory) {
           q = q.eq('category', activeCategory.id);
         }
-        
+
         const { data, error } = await q;
         if (error || !data) {
           console.log("Erro detalhado: books -", error);
@@ -115,13 +115,13 @@ export default function Library() {
           setBooks([]);
           return;
         }
-        
+
         console.log('RAW BOOKS:', data);
-        
+
         const mappedBooks = data.map((b: any) => {
           const catName = categories.find(c => c.id === String(b.category || b.categoryId || b.categoria_id))?.name || 'Sem Categoria';
           return {
-            id: String(b.id  || ''),
+            id: String(b.id || ''),
             title: b.title || b.titulo || '',
             author: b.author || b.autor || '',
             category: catName,
@@ -141,7 +141,7 @@ export default function Library() {
             metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || ''
           } as Book;
         });
-        
+
         setBooks(mappedBooks);
       } catch (err) {
         console.log("Erro detalhado (exceção): books -", err);
@@ -150,15 +150,15 @@ export default function Library() {
         setIsLoading(false);
       }
     };
-    
+
     fetchBooks();
   }, [activeCategory, categories]);
 
   const filteredBooks = books.filter(book => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = book.title.toLowerCase().includes(searchLower) ||
-                         book.author.toLowerCase().includes(searchLower) ||
-                         book.category.toLowerCase().includes(searchLower);
+      book.author.toLowerCase().includes(searchLower) ||
+      book.category.toLowerCase().includes(searchLower);
     const matchesAuthor = !activeAuthor || book.author === activeAuthor;
     return matchesSearch && matchesAuthor;
   });
@@ -190,11 +190,11 @@ export default function Library() {
           Ocorreu um erro ao consultar o acervo da biblioteca. As configurações de segurança atuais do seu banco de dados (RLS) estão bloqueando a leitura pública desta tabela (Erro 401/42501).
         </p>
         <p className="text-white/90 text-sm bg-black/50 p-4 rounded-lg">
-          <strong className="text-[#D4C3A3]">Para corrigir agora mesmo:</strong><br/>
+          <strong className="text-[#D4C3A3]">Para corrigir agora mesmo:</strong><br />
           Copie e cole o conteúdo do arquivo <code>migration_fix.sql</code> no seu SQL Editor do Supabase e clique em <strong>Run</strong>.
         </p>
       </div>
-      <button 
+      <button
         onClick={() => window.location.reload()}
         className="mt-8 px-10 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
       >
@@ -224,7 +224,7 @@ export default function Library() {
         <div className="flex flex-col lg:flex-row gap-12 relative">
           {/* Mobile Filter Toggle */}
           <div className="lg:hidden flex gap-4 mb-6">
-            <button 
+            <button
               onClick={() => setIsMobileFiltersOpen(true)}
               className="flex-1 flex items-center justify-center gap-2 glass py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] text-[#8B5E3C]"
             >
@@ -237,14 +237,14 @@ export default function Library() {
             <div>
               <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B5E3C] mb-6">Categorias</h3>
               <div className="flex flex-col gap-2">
-                <Link 
+                <Link
                   to="/biblioteca"
                   className={`px-4 py-3 rounded-xl text-sm transition-all ${!activeCategory ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
                 >
                   Todas as Obras
                 </Link>
                 {categories.map(cat => (
-                  <Link 
+                  <Link
                     key={cat.id}
                     to={`/biblioteca/${cat.slug}`}
                     className={`px-4 py-3 rounded-xl text-sm transition-all ${activeCategory?.id === cat.id ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
@@ -258,14 +258,14 @@ export default function Library() {
             <div>
               <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B5E3C] mb-6">Autores</h3>
               <div className="flex flex-col gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                <button 
+                <button
                   onClick={() => setActiveAuthor(null)}
                   className={`px-4 py-3 rounded-xl text-sm text-left transition-all ${!activeAuthor ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
                 >
                   Todos os Autores
                 </button>
                 {uniqueAuthors.map(author => (
-                  <button 
+                  <button
                     key={author}
                     onClick={() => setActiveAuthor(author)}
                     className={`px-4 py-3 rounded-xl text-sm text-left transition-all ${activeAuthor === author ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
@@ -280,8 +280,8 @@ export default function Library() {
               <h4 className="font-serif text-lg mb-4">Busca Rápida</h4>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Título ou autor..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
@@ -295,14 +295,14 @@ export default function Library() {
           <AnimatePresence>
             {isMobileFiltersOpen && (
               <>
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setIsMobileFiltersOpen(false)}
                   className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] lg:hidden"
                 />
-                <motion.div 
+                <motion.div
                   initial={{ x: '-100%' }}
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}
@@ -319,7 +319,7 @@ export default function Library() {
                     <div>
                       <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B5E3C] mb-6">Categorias</h4>
                       <div className="flex flex-col gap-2">
-                        <Link 
+                        <Link
                           to="/biblioteca"
                           onClick={() => setIsMobileFiltersOpen(false)}
                           className={`px-4 py-3 rounded-xl text-sm transition-all ${!activeCategory ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
@@ -327,7 +327,7 @@ export default function Library() {
                           Todas as Obras
                         </Link>
                         {categories.map(cat => (
-                          <Link 
+                          <Link
                             key={cat.id}
                             to={`/biblioteca/${cat.slug}`}
                             onClick={() => setIsMobileFiltersOpen(false)}
@@ -342,14 +342,14 @@ export default function Library() {
                     <div>
                       <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B5E3C] mb-6">Autores</h4>
                       <div className="flex flex-col gap-2">
-                        <button 
+                        <button
                           onClick={() => { setActiveAuthor(null); setIsMobileFiltersOpen(false); }}
                           className={`px-4 py-3 rounded-xl text-sm text-left transition-all ${!activeAuthor ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
                         >
                           Todos os Autores
                         </button>
                         {uniqueAuthors.map(author => (
-                          <button 
+                          <button
                             key={author}
                             onClick={() => { setActiveAuthor(author); setIsMobileFiltersOpen(false); }}
                             className={`px-4 py-3 rounded-xl text-sm text-left transition-all ${activeAuthor === author ? 'bg-[#8B5E3C] text-white shadow-lg shadow-[#8B5E3C]/20' : 'hover:bg-white/5 text-white/50'}`}
@@ -364,8 +364,8 @@ export default function Library() {
                       <h4 className="font-serif text-lg mb-4">Busca Rápida</h4>
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           placeholder="Título ou autor..."
                           value={searchTerm}
                           onChange={e => setSearchTerm(e.target.value)}
@@ -394,7 +394,7 @@ export default function Library() {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                 <AnimatePresence mode="popLayout">
                   {filteredBooks.map((book, index) => (
-                    <motion.div 
+                    <motion.div
                       key={book.id}
                       layout
                       initial={{ opacity: 0, y: 20 }}
@@ -404,10 +404,10 @@ export default function Library() {
                       className="glass p-6 rounded-[2rem] flex flex-col group hover:border-[#8B5E3C]/50 transition-all duration-500"
                     >
                       <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-6 shadow-2xl">
-                        <img 
-                          src={book.imageUrl || '/placeholder-book.jpg'} 
+                        <img
+                          src={book.imageUrl || '/placeholder-book.jpg'}
                           onError={(e) => { e.currentTarget.src = '/placeholder-book.jpg'; }}
-                          alt={book.title} 
+                          alt={book.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                           referrerPolicy="no-referrer"
                         />
@@ -423,17 +423,17 @@ export default function Library() {
                         <span className="text-[#8B5E3C] font-bold uppercase tracking-widest text-[9px] mb-2">{book.category}</span>
                         <h3 className="text-xl font-serif mb-1 group-hover:text-[#8B5E3C] transition-colors">{book.title}</h3>
                         <p className="text-white/40 text-sm mb-4">{book.author}</p>
-                        
+
                         <div className="mt-auto flex flex-col gap-3">
-                          <a 
-                            href={book.buyUrl} 
-                            target="_blank" 
+                          <a
+                            href={book.buyUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="w-full py-3 bg-[#8B5E3C] text-white rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-[#D4C3A3] transition-colors"
                           >
                             <ShoppingCart className="w-4 h-4" /> Comprar Agora
                           </a>
-                          <Link 
+                          <Link
                             to={`/livro/${book.slug}`}
                             className="w-full py-3 border border-white/10 text-white/50 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-white/5 hover:text-white transition-colors"
                           >
