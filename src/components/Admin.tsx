@@ -235,7 +235,7 @@ export default function Admin() {
 
   useEffect(() => {
     // No longer needed, using onSnapshot
-  }, [activeTab, user, isAdminUser]);
+  }, []);
 
   const uploadFile = async (file: File | Blob, path: string): Promise<string> => {
     try {
@@ -512,6 +512,14 @@ export default function Admin() {
       })));
     };
     fetchProducts();
+    // Observação: movido fetchUsersList para um useEffect independente
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []); // Matrix vazia conforme solicitado
+
+  useEffect(() => {
     if (isAdminUser) {
       const fetchUsersList = async () => {
         try {
@@ -526,15 +534,12 @@ export default function Admin() {
           }
         } catch (e) {
           console.error("Error fetching users via Admin API", e);
+          setTimeout(fetchUsersList, 10000); // Retry after 10 seconds silently
         }
       };
       fetchUsersList();
     }
-
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, [user, isAdminUser]);
+  }, [isAdminUser]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
