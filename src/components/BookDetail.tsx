@@ -95,12 +95,12 @@ export default function BookDetail() {
           imageAlt: bookData.cover_alt || '',
           videoUrl: bookData.video_url || '',
           buyUrl: bookData.amazon_url || bookData.link_compra || '',
-          publisher: bookData.editora || '',
-          year: bookData.ano || '',
-          pages: bookData.paginas || '',
+          publisher: bookData.publisher || bookData.editora || '',
+          year: bookData.year || bookData.ano || '',
+          pages: bookData.pages || bookData.paginas || '',
           synopsis: bookData.synopsis || bookData.sinopse || '',
-          targetAudience: bookData.target_audience || bookData.indicacao || '',
-          themes: bookData.main_themes || bookData.temas || '',
+          targetAudience: bookData.target_audience || bookData.targetAudience || bookData.indicacao || '',
+          themes: bookData.main_themes || bookData.themes || bookData.temas || '',
           badge: bookData.badge || '',
           metaKeywords: bookData.seo_keywords || ''
         } as Book;
@@ -111,7 +111,7 @@ export default function BookDetail() {
           const { data: relatedData, error: relatedError } = await supabase
             .from('books')
             .select('*')
-            .or(`categoryId.eq.${rawCategoryId},category_id.eq.${rawCategoryId},categoria_id.eq.${rawCategoryId}`)
+            .eq('category', rawCategoryId)
             .neq('slug', slug)
             .limit(4);
 
@@ -121,12 +121,14 @@ export default function BookDetail() {
               title: b.title || b.titulo || '',
               author: b.author || b.autor || '',
               category: catName,
-              categoryId: b.categoryId || b.category_id || b.categoria_id || '',
+              categoryId: b.category || b.categoryId || b.category_id || '',
               slug: b.slug || '',
               imageUrl: b.cover_url || b.imageUrl || b.capa_url_new || '',
-              buyUrl: b.buyUrl || b.buy_url || b.link_compra || '',
+              buyUrl: b.amazon_url || b.buyUrl || b.buy_url || b.link_compra || '',
             })) as Book[];
             setRelatedBooks(mappedRelated);
+          } else if (relatedError) {
+             console.error("Related books error:", relatedError);
           }
         }
       } catch (err) {

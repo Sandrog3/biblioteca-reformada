@@ -416,15 +416,7 @@ export default function Library() {
                             {book.badge}
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center gap-4">
-                           <Link 
-                            to={`/livro/${book.slug}`}
-                            className="p-4 bg-white text-black rounded-full hover:bg-[#8B5E3C] hover:text-white transition-colors"
-                            title="Ver Detalhes"
-                          >
-                            <Info className="w-6 h-6" />
-                          </Link>
-                        </div>
+                        {/* Overlay removed per request */}
                       </div>
 
                       <div className="flex-1 flex flex-col">
