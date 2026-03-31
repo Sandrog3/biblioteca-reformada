@@ -107,7 +107,7 @@ export default function LandingPage() {
     }
 
     document.title = title;
-    
+
     const updateMeta = (name: string, content: string) => {
       let meta = document.querySelector(`meta[name="${name}"]`);
       if (!meta) {
@@ -177,7 +177,7 @@ export default function LandingPage() {
       const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
       if (error) console.log('Erro detalhado: posts -', error);
       if (data) {
-        setPosts(data.map((p: any) => ({ 
+        setPosts(data.map((p: any) => ({
           id: String(p.id || ''),
           title: p.title || '',
           category: p.category || '',
@@ -188,10 +188,10 @@ export default function LandingPage() {
           videoUrl: p.video_url || p.videoUrl || '',
           videoKeywords: p.video_keywords || p.videoKeywords || '',
           metaKeywords: p.meta_keywords || p.metaKeywords || '',
-          createdAt: { 
+          createdAt: {
             seconds: Math.floor(new Date(p.created_at || Date.now()).getTime() / 1000),
             nanoseconds: 0
-          } 
+          }
         })));
       }
     };
@@ -202,11 +202,11 @@ export default function LandingPage() {
           supabase.from('books').select('*').order('created_at', { ascending: false }),
           supabase.from('categories').select('*')
         ]);
-        
+
         if (booksResponse.error || catsResponse.error) {
           console.log('Erro detalhado: books/categories -', booksResponse.error || catsResponse.error);
         }
-        
+
         if (!booksResponse.data) {
           setBooks([]);
           return;
@@ -215,27 +215,27 @@ export default function LandingPage() {
         const catsData = catsResponse.data || [];
 
         const mappedBooks = booksResponse.data.map((b: any) => {
-            const catName = catsData.find(c => String(c.id) === String(b.category || b.categoryId || b.categoria_id))?.nome || 'Sem Categoria';
-            return {
-              id: String(b.id || ''),
-              title: b.title || b.titulo || '',
-              author: b.author || b.autor || '',
-              category: catName, 
-              categoryId: b.category || b.categoryId || b.categoria_id || '',
-              slug: b.slug || '',
-              imageUrl: b.cover_url || b.imageUrl || b.capa_url_new || '',
-              imageAlt: b.cover_alt || '',
-              videoUrl: b.videoUrl || b.video_url || '',
-              buyUrl: b.amazon_url || b.buyUrl || b.buy_url || b.link_compra || '',
-              publisher: b.publisher || b.editora || '',
-              year: b.year || b.ano || '',
-              pages: b.pages || b.paginas || '',
-              synopsis: b.synopsis || b.sinopse || '',
-              targetAudience: b.target_audience || b.targetAudience || b.indicacao || '',
-              themes: b.main_themes || b.themes || b.temas || '',
-              badge: b.badge || '',
-              metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || ''
-            } as Book;
+          const catName = catsData.find(c => String(c.id) === String(b.category || b.categoryId || b.categoria_id))?.nome || 'Sem Categoria';
+          return {
+            id: String(b.id || ''),
+            title: b.title || b.titulo || '',
+            author: b.author || b.autor || '',
+            category: catName,
+            categoryId: b.category || b.categoryId || b.categoria_id || '',
+            slug: b.slug || '',
+            imageUrl: b.cover_url || b.imageUrl || b.capa_url_new || '',
+            imageAlt: b.cover_alt || '',
+            videoUrl: b.videoUrl || b.video_url || '',
+            buyUrl: b.amazon_url || b.buyUrl || b.buy_url || b.link_compra || '',
+            publisher: b.publisher || b.editora || '',
+            year: b.year || b.ano || '',
+            pages: b.pages || b.paginas || '',
+            synopsis: b.synopsis || b.sinopse || '',
+            targetAudience: b.target_audience || b.targetAudience || b.indicacao || '',
+            themes: b.main_themes || b.themes || b.temas || '',
+            badge: b.badge || '',
+            metaKeywords: b.seo_keywords || b.metaKeywords || b.meta_keywords || ''
+          } as Book;
         });
 
         setBooks(mappedBooks);
@@ -250,19 +250,19 @@ export default function LandingPage() {
       const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
       if (error) console.log('Erro detalhado: products -', error);
       if (data) setProducts(data.map((d: any) => ({
-          id: String(d.id || ''),
-          title: d.title || '',
-          description: d.description || '',
-          characteristics: d.characteristics || [],
-          buyUrl: d.buy_url || d.buyUrl || '',
-          images: d.images || [],
-          imageAlt: d.image_alt || d.imageAlt || '',
-          videoUrl: d.video_url || d.videoUrl || '',
-          videoKeywords: d.video_keywords || d.videoKeywords || '',
-          metaKeywords: d.meta_keywords || d.metaKeywords || '',
-          badge: d.badge || '',
-          createdAt: d.created_at || ''
-        })));
+        id: String(d.id || ''),
+        title: d.title || '',
+        description: d.description || '',
+        characteristics: d.characteristics || [],
+        buyUrl: d.buy_url || d.buyUrl || '',
+        images: d.images || [],
+        imageAlt: d.image_alt || d.imageAlt || '',
+        videoUrl: d.video_url || d.videoUrl || '',
+        videoKeywords: d.video_keywords || d.videoKeywords || '',
+        metaKeywords: d.meta_keywords || d.metaKeywords || '',
+        badge: d.badge || '',
+        createdAt: d.created_at || ''
+      })));
     };
     // fetchProducts postponed to loadAll
 
@@ -309,11 +309,11 @@ export default function LandingPage() {
           Ocorreu um erro ao carregar os dados do painel. As configurações de segurança atuais do seu banco de dados (RLS) estão bloqueando o acesso público à biblioteca.
         </p>
         <p className="text-white/90 text-sm bg-black/50 p-4 rounded-lg">
-          <strong className="text-[#D4C3A3]">Para corrigir agora mesmo:</strong><br/>
+          <strong className="text-[#D4C3A3]">Para corrigir agora mesmo:</strong><br />
           Vá ao seu painel do Supabase, acesse o módulo de <strong>SQL Editor</strong>, cole todo o conteúdo do arquivo <code>migration_fix.sql</code> e aperte em <strong>Run</strong>.
         </p>
       </div>
-      <button 
+      <button
         onClick={() => window.location.reload()}
         className="mt-8 px-10 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
       >
@@ -335,9 +335,7 @@ export default function LandingPage() {
   const marqueeItems = marqueeItemsString.split(',').map(item => item.trim()).filter(item => item !== "");
   const whatsappNumber = String(settings.whatsappNumber || "5548991709438");
 
-  // Meia Dourada Styling Logic
-  const styledHeroTitle = heroTitle
-    .replace('Reformado', '<span class="italic text-[#A07855]">Reformado</span>');
+
 
   // ESTANTE
   const safeProducts = products.map(p => ({
@@ -353,30 +351,31 @@ export default function LandingPage() {
       {/* HERO SECTION */}
       <section id="home" className="relative min-h-[85vh] md:min-h-screen flex items-start md:items-center pt-44 md:pt-48 overflow-hidden">
         <div className="absolute inset-0 z-0">
-            <motion.img 
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
-              src={heroImage || undefined} 
-              alt="Library Background" 
-              className="w-full h-full object-cover opacity-30"
-              referrerPolicy="no-referrer"
-            />
+          <motion.img
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
+            src={heroImage || undefined}
+            alt="Library Background"
+            className="w-full h-full object-cover opacity-30"
+            referrerPolicy="no-referrer"
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
               className="text-4xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.1] mb-8 tracking-tighter text-white break-words"
-              dangerouslySetInnerHTML={{ __html: styledHeroTitle }}
-            />
-            
-            <motion.p 
+            >
+              Livros Cristãos Baseados no Ensino <span className="italic text-[#A07855]">Reformado</span> Com Fidelidade às Escrituras
+            </motion.h1>
+
+            <motion.p
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -385,8 +384,8 @@ export default function LandingPage() {
             >
               {heroSubtitle}
             </motion.p>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -406,75 +405,75 @@ export default function LandingPage() {
 
       {/* BENTO GRID */}
       <section className="py-16 md:py-32 container mx-auto px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mb-12 md:mb-20"
         >
-          <h2 className="text-4xl md:text-7xl font-serif mb-6">Por que construir sua<br/><span className="text-[#8B5E3C] italic">biblioteca conosco?</span></h2>
+          <h2 className="text-4xl md:text-7xl font-serif mb-6">Por que construir sua<br /><span className="text-[#8B5E3C] italic">biblioteca conosco?</span></h2>
           <div className="w-20 h-1 bg-[#8B5E3C]"></div>
-         <div className="bento-grid">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="col-span-12 md:col-span-7 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-end min-h-[400px] md:min-h-[500px] relative overflow-hidden group"
-          >
-            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1000&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-1000" alt="Books" referrerPolicy="no-referrer" />
-            <div className="relative z-10">
-              <ShieldCheck className="text-[#8B5E3C] w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6" />
-              <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Curadoria Criteriosa</h3>
-              <p className="text-base md:text-lg text-white/50 font-light leading-relaxed max-w-md">
-                Cada recomendação passa por um filtro rigoroso de fidelidade às Escrituras e profundidade teológica. Não apenas listamos livros, entregamos fundamentos.
+          <div className="bento-grid">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="col-span-12 md:col-span-7 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-end min-h-[400px] md:min-h-[500px] relative overflow-hidden group"
+            >
+              <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1000&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-1000" alt="Books" referrerPolicy="no-referrer" />
+              <div className="relative z-10">
+                <ShieldCheck className="text-[#8B5E3C] w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6" />
+                <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Curadoria Criteriosa</h3>
+                <p className="text-base md:text-lg text-white/50 font-light leading-relaxed max-w-md">
+                  Cada recomendação passa por um filtro rigoroso de fidelidade às Escrituras e profundidade teológica. Não apenas listamos livros, entregamos fundamentos.
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="col-span-12 md:col-span-5 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-center bg-[#8B5E3C]/10 border-[#8B5E3C]/20"
+            >
+              <Users className="text-[#8B5E3C] w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6" />
+              <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Comunidade de Leitores</h3>
+              <p className="text-base md:text-lg text-white/50 font-light leading-relaxed">
+                Junte-se a milhares de cristãos que buscam o amadurecimento espiritual através da leitura séria e do estudo bíblico constante.
               </p>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="col-span-12 md:col-span-5 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-center bg-[#8B5E3C]/10 border-[#8B5E3C]/20"
-          >
-            <Users className="text-[#8B5E3C] w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6" />
-            <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Comunidade de Leitores</h3>
-            <p className="text-base md:text-lg text-white/50 font-light leading-relaxed">
-              Junte-se a milhares de cristãos que buscam o amadurecimento espiritual através da leitura séria e do estudo bíblico constante.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="col-span-12 md:col-span-5 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-center"
-          >
-            <Layers className="text-[#8B5E3C] w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6" />
-            <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Recursos Digitais</h3>
-            <p className="text-base md:text-lg text-white/50 font-light leading-relaxed">
-              Indicações de Kindles, aplicativos de estudo e ferramentas que otimizam seu tempo e organização.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            className="col-span-12 md:col-span-7 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden group"
-          >
-            <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-1000" alt="Study" referrerPolicy="no-referrer" />
-            <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Legado Espiritual</h3>
-              <p className="text-base md:text-lg text-white/50 font-light leading-relaxed max-w-md">
-                Ajudamos você a formar uma biblioteca que não apenas decora sua estante, mas transforma sua vida e de sua família.
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="col-span-12 md:col-span-5 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-center"
+            >
+              <Layers className="text-[#8B5E3C] w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6" />
+              <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Recursos Digitais</h3>
+              <p className="text-base md:text-lg text-white/50 font-light leading-relaxed">
+                Indicações de Kindles, aplicativos de estudo e ferramentas que otimizam seu tempo e organização.
               </p>
-            </div>
-          </motion.div>
-        </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+              className="col-span-12 md:col-span-7 glass p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-center relative overflow-hidden group"
+            >
+              <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-1000" alt="Study" referrerPolicy="no-referrer" />
+              <div className="relative z-10">
+                <h3 className="text-2xl md:text-3xl font-serif mb-3 md:mb-4">Legado Espiritual</h3>
+                <p className="text-base md:text-lg text-white/50 font-light leading-relaxed max-w-md">
+                  Ajudamos você a formar uma biblioteca que não apenas decora sua estante, mas transforma sua vida e de sua família.
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
       </section>
 
@@ -494,7 +493,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {books.length > 0 ? books.map(book => (
-              <motion.div 
+              <motion.div
                 key={book.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -504,7 +503,7 @@ export default function LandingPage() {
                 {/* Book Card */}
                 <div className="relative aspect-[3/4] overflow-hidden rounded-2xl mb-6 glass border-white/5 group-hover:border-[#8B5E3C]/30 transition-all duration-500">
                   <img src={book.imageUrl || '/placeholder-book.jpg'} onError={(e) => { e.currentTarget.src = '/placeholder-book.jpg'; }} alt={book.imageAlt || book.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40" referrerPolicy="no-referrer" />
-                  
+
                   {/* Badge */}
                   {book.badge && (
                     <div className="absolute top-4 left-4 z-20">
@@ -518,15 +517,15 @@ export default function LandingPage() {
                   <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-center p-8 text-center">
                     <div className="space-y-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                       <div className="flex flex-col gap-3">
-                        <a 
-                          href={book.buyUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={book.buyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="w-full py-3 bg-[#8B5E3C] text-white text-[10px] font-bold uppercase tracking-widest rounded-full hover:bg-[#D4C3A3] transition-colors flex items-center justify-center"
                         >
                           Ver Preço na Amazon
                         </a>
-                        <button 
+                        <button
                           onClick={() => setSelectedBook(book)}
                           className="w-full py-3 glass text-white text-[10px] font-bold uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors flex items-center justify-center"
                         >
@@ -540,7 +539,7 @@ export default function LandingPage() {
                 {/* Card Info (Static) */}
                 <div className="px-2">
                   <span className="text-[#8B5E3C] text-[10px] font-bold uppercase tracking-widest mb-2 block">{book.category}</span>
-                  <h4 
+                  <h4
                     onClick={() => setSelectedBook(book)}
                     className="text-xl font-serif mb-1 group-hover:text-[#8B5E3C] transition-colors cursor-pointer hover:underline decoration-[#8B5E3C]/30 underline-offset-4"
                   >
@@ -558,19 +557,19 @@ export default function LandingPage() {
         {/* BOOK DETAILS MODAL */}
         {selectedBook && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               onClick={() => setSelectedBook(null)}
               className="absolute inset-0 bg-black/90 backdrop-blur-md"
             />
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               className="relative w-full max-w-5xl max-h-[90vh] glass rounded-[2.5rem] overflow-hidden flex flex-col md:flex-row z-10 border-white/10"
             >
-              <button 
+              <button
                 onClick={() => setSelectedBook(null)}
                 className="absolute top-6 right-6 z-20 p-3 glass rounded-full hover:bg-white/10 transition-colors"
               >
@@ -584,7 +583,7 @@ export default function LandingPage() {
                   if (selectedBook.videoUrl) {
                     if (youtubeUrl) {
                       return (
-                        <iframe 
+                        <iframe
                           src={youtubeUrl}
                           className="w-full h-full"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -594,9 +593,9 @@ export default function LandingPage() {
                       );
                     }
                     return (
-                      <video 
-                        src={selectedBook.videoUrl} 
-                        controls 
+                      <video
+                        src={selectedBook.videoUrl}
+                        controls
                         className="w-full h-full object-cover"
                         poster={selectedBook.imageUrl}
                       />
@@ -677,15 +676,15 @@ export default function LandingPage() {
                   </section>
 
                   <div className="pt-10 flex flex-col sm:flex-row gap-4">
-                    <a 
-                      href={selectedBook.buyUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={selectedBook.buyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex-1 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:bg-[#D4C3A3] transition-colors flex items-center justify-center shadow-xl shadow-[#8B5E3C]/10"
                     >
                       Ver Preço na Amazon
                     </a>
-                    <button 
+                    <button
                       onClick={() => setSelectedBook(null)}
                       className="px-10 py-5 glass text-white font-bold uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors"
                     >
@@ -705,7 +704,7 @@ export default function LandingPage() {
           {safeProducts.length > 0 ? safeProducts.map((product, index) => (
             <div key={product.id} className={`grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-24 items-start ${index > 0 ? 'mt-16 md:mt-64' : ''}`}>
               <div className={`relative ${index % 2 !== 0 ? 'lg:order-2' : ''}`}>
-                <div 
+                <div
                   className="aspect-square rounded-[2rem] md:rounded-[3rem] overflow-hidden relative group shadow-2xl bg-black cursor-pointer"
                   onClick={() => {
                     setSelectedProduct(product);
@@ -715,10 +714,10 @@ export default function LandingPage() {
                   {product.videoUrl ? (
                     getYouTubeEmbedUrl(product.videoUrl) ? (
                       <div className="w-full h-full relative">
-                        <img 
-                          src={product.images[0] || undefined} 
-                          alt={product.imageAlt || product.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60" 
+                        <img
+                          src={product.images[0] || undefined}
+                          alt={product.imageAlt || product.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60"
                           referrerPolicy="no-referrer"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -728,8 +727,8 @@ export default function LandingPage() {
                         </div>
                       </div>
                     ) : (
-                      <video 
-                        src={product.videoUrl} 
+                      <video
+                        src={product.videoUrl}
                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                         muted
                         loop
@@ -739,10 +738,10 @@ export default function LandingPage() {
                       />
                     )
                   ) : (
-                    <img 
-                      src={product.images[0] || undefined} 
-                      alt={product.imageAlt || product.title} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    <img
+                      src={product.images[0] || undefined}
+                      alt={product.imageAlt || product.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       referrerPolicy="no-referrer"
                     />
                   )}
@@ -770,7 +769,7 @@ export default function LandingPage() {
                 <p className="text-white/50 text-lg md:text-2xl font-light mb-8 md:mb-12 leading-relaxed">
                   {product.description}
                 </p>
-                
+
                 <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
                   {product.characteristics.slice(0, 3).map((item, i) => (
                     <div key={i} className="flex items-center gap-4 md:gap-5">
@@ -783,15 +782,15 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
-                  <a 
-                    href={product.buyUrl} 
-                    target="_blank" 
+                  <a
+                    href={product.buyUrl}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="px-8 md:px-12 py-4 md:py-6 bg-white text-black font-bold uppercase tracking-widest rounded-full hover:bg-[#8B5E3C] hover:text-white transition-all duration-500 text-center text-xs md:text-base"
                   >
                     Encomendar Agora
                   </a>
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedProduct(product);
                       setCurrentImageIndex(product.videoUrl ? -1 : 0);
@@ -813,19 +812,19 @@ export default function LandingPage() {
         {/* PRODUCT DETAILS MODAL */}
         {selectedProduct && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               onClick={() => setSelectedProduct(null)}
               className="absolute inset-0 bg-black/95 backdrop-blur-xl"
             />
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               className="relative w-full max-w-6xl max-h-[90vh] glass rounded-[3rem] overflow-hidden flex flex-col lg:flex-row z-10 border-white/10"
             >
-              <button 
+              <button
                 onClick={() => setSelectedProduct(null)}
                 className="absolute top-8 right-8 z-30 p-3 glass rounded-full hover:bg-white/10 transition-colors"
               >
@@ -839,7 +838,7 @@ export default function LandingPage() {
                   if (selectedProduct.videoUrl && currentImageIndex === -1) {
                     if (youtubeUrl) {
                       return (
-                        <iframe 
+                        <iframe
                           src={youtubeUrl}
                           className="w-full h-full"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -849,29 +848,29 @@ export default function LandingPage() {
                       );
                     }
                     return (
-                      <video 
-                        src={selectedProduct.videoUrl} 
-                        controls 
+                      <video
+                        src={selectedProduct.videoUrl}
+                        controls
                         className="w-full h-full object-cover"
                         autoPlay
                       />
                     );
                   }
                   return (
-                    <motion.img 
+                    <motion.img
                       key={currentImageIndex}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      src={selectedProduct.images[currentImageIndex === -1 ? 0 : currentImageIndex] || undefined} 
-                      className="w-full h-full object-cover" 
-                      alt={selectedProduct.imageAlt || selectedProduct.title} 
+                      src={selectedProduct.images[currentImageIndex === -1 ? 0 : currentImageIndex] || undefined}
+                      className="w-full h-full object-cover"
+                      alt={selectedProduct.imageAlt || selectedProduct.title}
                     />
                   );
                 })()}
-                
+
                 <div className="absolute inset-x-0 bottom-8 flex justify-center gap-3 z-20">
                   {selectedProduct.videoUrl && (
-                    <button 
+                    <button
                       onClick={() => setCurrentImageIndex(-1)}
                       className={`w-8 h-8 rounded-full transition-all flex items-center justify-center ${currentImageIndex === -1 ? 'bg-[#8B5E3C]' : 'bg-white/20 hover:bg-white/40'}`}
                     >
@@ -879,7 +878,7 @@ export default function LandingPage() {
                     </button>
                   )}
                   {selectedProduct.images.map((_, i) => (
-                    <button 
+                    <button
                       key={i}
                       onClick={() => setCurrentImageIndex(i)}
                       className={`w-3 h-3 rounded-full transition-all ${i === currentImageIndex ? 'bg-[#8B5E3C] w-8' : 'bg-white/20 hover:bg-white/40'}`}
@@ -889,13 +888,13 @@ export default function LandingPage() {
 
                 {selectedProduct.images.length > 1 && currentImageIndex !== -1 && (
                   <>
-                    <button 
+                    <button
                       onClick={() => setCurrentImageIndex((prev) => (prev <= 0 ? selectedProduct.images.length - 1 : prev - 1))}
                       className="absolute left-6 top-1/2 -translate-y-1/2 p-4 glass rounded-full hover:bg-white/10 transition-colors z-20"
                     >
                       <ArrowLeft className="w-6 h-6" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => setCurrentImageIndex((prev) => (prev >= selectedProduct.images.length - 1 ? 0 : prev + 1))}
                       className="absolute right-6 top-1/2 -translate-y-1/2 p-4 glass rounded-full hover:bg-white/10 transition-colors z-20"
                     >
@@ -933,15 +932,15 @@ export default function LandingPage() {
                   </section>
 
                   <div className="pt-12 flex flex-col sm:flex-row gap-6">
-                    <a 
-                      href={selectedProduct.buyUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={selectedProduct.buyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex-1 py-6 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:bg-[#D4C3A3] transition-colors flex items-center justify-center gap-3 shadow-2xl shadow-[#8B5E3C]/20"
                     >
                       Encomendar Agora
                     </a>
-                    <button 
+                    <button
                       onClick={() => setSelectedProduct(null)}
                       className="px-12 py-6 glass text-white font-bold uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors"
                     >
@@ -968,8 +967,8 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {posts.length > 0 ? posts.map(post => (
-              <article 
-                key={post.id} 
+              <article
+                key={post.id}
                 className="group cursor-pointer"
                 onClick={() => setSelectedPost(post)}
               >
@@ -1003,21 +1002,21 @@ export default function LandingPage() {
         <AnimatePresence>
           {selectedPost && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedPost(null)}
                 className="absolute inset-0 bg-black/95 backdrop-blur-xl"
               />
-              
-              <motion.div 
+
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="relative w-full max-w-4xl max-h-[90vh] glass rounded-[3rem] overflow-hidden flex flex-col z-10 border-white/10"
               >
-                <button 
+                <button
                   onClick={() => setSelectedPost(null)}
                   className="absolute top-8 right-8 z-30 p-3 glass rounded-full hover:bg-white/10 transition-colors"
                 >
@@ -1030,7 +1029,7 @@ export default function LandingPage() {
                       const youtubeUrl = selectedPost.videoUrl ? getYouTubeEmbedUrl(selectedPost.videoUrl) : null;
                       if (selectedPost.videoUrl && youtubeUrl) {
                         return (
-                          <iframe 
+                          <iframe
                             src={youtubeUrl}
                             className="w-full h-full"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1073,7 +1072,7 @@ export default function LandingPage() {
                       </h1>
                       <div className="flex items-center justify-center gap-6 text-white/40 text-[10px] font-bold uppercase tracking-widest">
                         <span className="flex items-center gap-2">
-                          <Clock className="w-3 h-3" /> 
+                          <Clock className="w-3 h-3" />
                           {Math.ceil((selectedPost.content?.split(' ').length || 0) / 200)} min de leitura
                         </span>
                         {selectedPost.createdAt && (
@@ -1085,10 +1084,10 @@ export default function LandingPage() {
                     </header>
 
                     <div className="rich-text-content">
-                      <div 
-                        dangerouslySetInnerHTML={{ 
-                          __html: DOMPurify.sanitize(selectedPost.content || selectedPost.excerpt) 
-                        }} 
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(selectedPost.content || selectedPost.excerpt)
+                        }}
                       />
                     </div>
 
@@ -1102,7 +1101,7 @@ export default function LandingPage() {
                     )}
 
                     <div className="mt-16 pt-12 border-t border-white/5 flex justify-center">
-                      <button 
+                      <button
                         onClick={() => setSelectedPost(null)}
                         className="px-12 py-5 bg-[#8B5E3C] text-white font-bold uppercase tracking-widest rounded-full hover:bg-[#D4C3A3] transition-colors shadow-xl shadow-[#8B5E3C]/20"
                       >
@@ -1165,15 +1164,15 @@ export default function LandingPage() {
               <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B5E3C] mb-10">Newsletter</h5>
               <p className="text-white/40 text-sm font-light mb-8">Receba curadorias exclusivas e novos artigos diretamente no seu e-mail.</p>
               <form onSubmit={handleSubscribe} className="flex flex-col gap-4">
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   placeholder={subscribed ? "Obrigado por assinar!" : "Seu melhor e-mail"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={submitting || subscribed}
-                  className={`w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-[#8B5E3C] transition-all ${subscribed ? 'border-green-500/50 text-green-400' : ''}`} 
+                  className={`w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-[#8B5E3C] transition-all ${subscribed ? 'border-green-500/50 text-green-400' : ''}`}
                 />
-                <button 
+                <button
                   type="submit"
                   disabled={submitting || subscribed}
                   className="w-full py-4 bg-[#8B5E3C] text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[#D4C3A3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -1184,7 +1183,7 @@ export default function LandingPage() {
               </form>
             </div>
           </div>
-          
+
           <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 gap-8">
             <p className="text-[9px] text-white/20 uppercase tracking-[0.4em]">
               &copy; 2026 Biblioteca Reformada. Todos os direitos reservados.
@@ -1197,10 +1196,10 @@ export default function LandingPage() {
         </div>
       </footer>
       {/* FLOATING WHATSAPP BUTTON */}
-      <a 
-        href={`https://wa.me/${whatsappNumber}`} 
-        target="_blank" 
-        rel="noopener noreferrer" 
+      <a
+        href={`https://wa.me/${whatsappNumber}`}
+        target="_blank"
+        rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-[60] w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 group"
         title="Fale Conosco no WhatsApp"
       >
