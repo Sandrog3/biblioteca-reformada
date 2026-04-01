@@ -468,7 +468,7 @@ export default function Admin() {
         description: d.description || '',
         characteristics: d.characteristics || '',
         buyUrl: d.buy_url || d.buyUrl || '',
-        images: d.image_url || d.images || '',
+        images: (d.image_url || d.images || '').split('\n').filter((i: string) => i.trim()),
         imageAlt: d.image_alt || d.imageAlt || '',
         videoUrl: d.video_url || d.videoUrl || '',
         videoKeywords: '', // Coluna descontinuada
@@ -974,7 +974,7 @@ export default function Admin() {
       description: product.description || "",
       characteristics: product.characteristics || "",
       buyUrl: product.buyUrl || "",
-      images: product.images || "",
+      images: Array.isArray(product.images) ? product.images.join('\n') : (product.images || ""),
       imageAlt: product.imageAlt || "",
       videoUrl: product.videoUrl || "",
       videoKeywords: product.videoKeywords || "",
