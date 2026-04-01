@@ -14,6 +14,7 @@ interface SiteSettings {
   heroSubtitle: string;
   heroImage: string;
   logoUrl?: string;
+  footerLogoUrl?: string;
   slogan?: string;
   marqueeItems: string;
   whatsappNumber: string;
