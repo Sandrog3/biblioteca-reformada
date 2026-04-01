@@ -580,12 +580,12 @@ export default function Admin() {
       title: d.title || '',
       category: d.category || '',
       excerpt: d.excerpt || '',
-      content: d.content || '',
+      content: d.content || d.body || '',
       imageUrl: d.image_url || d.imageUrl || '',
       imageAlt: d.image_alt || d.imageAlt || '',
       videoUrl: d.video_url || d.videoUrl || '',
       videoKeywords: d.video_keywords || d.videoKeywords || '',
-      metaKeywords: d.meta_keywords || d.metaKeywords || '',
+      metaKeywords: d.seo_keywords || d.meta_keywords || d.metaKeywords || '',
       createdAt: d.created_at || ''
     })));
   };
@@ -614,7 +614,7 @@ export default function Admin() {
       return;
     }
     try {
-      const postPayload = {
+      const postPayload: any = {
         title: newPost.title,
         category: newPost.category,
         excerpt: newPost.excerpt,
@@ -625,6 +625,8 @@ export default function Admin() {
         video_keywords: newPost.videoKeywords,
         meta_keywords: newPost.metaKeywords
       };
+      // Em tabelas de postagens as vezes usam seo_keywords ou body no Supabase
+      // vamos ser robustos na atualização/insersão caso a tabela suporta as colunas
 
       if (editingPostId) {
         await supabase.from("posts").update({ ...postPayload, updated_at: new Date().toISOString() }).eq("id", editingPostId);
@@ -637,17 +639,7 @@ export default function Admin() {
       
       await fetchPosts();
       
-      setNewPost({
-        title: "",
-        category: "",
-        excerpt: "",
-        content: "",
-        imageUrl: "",
-        imageAlt: "",
-        videoUrl: "",
-        videoKeywords: "",
-        metaKeywords: ""
-      });
+      cancelEditPost();
     } catch (e: any) {
       showNotification(`Erro ao salvar postagem: ${e.message || e.code || 'Desconhecido'}`, 'error');
     }
@@ -667,6 +659,21 @@ export default function Admin() {
       metaKeywords: post.metaKeywords || ""
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEditPost = () => {
+    setEditingPostId(null);
+    setNewPost({
+      title: "",
+      category: "",
+      excerpt: "",
+      content: "",
+      imageUrl: "",
+      imageAlt: "",
+      videoUrl: "",
+      videoKeywords: "",
+      metaKeywords: ""
+    });
   };
 
   const deletePost = async (id: string) => {
@@ -1448,11 +1455,18 @@ export default function Admin() {
 
         {activeTab === 'posts' && (
           <div className="space-y-12">
-            <div className="glass p-8 rounded-3xl">
-              <h3 className="text-xl font-serif mb-6 flex items-center gap-2">
-                {editingPostId ? <Pencil className="text-[#8B5E3C]" /> : <Plus className="text-[#8B5E3C]" />}
-                {editingPostId ? "Editar Postagem" : "Nova Postagem"}
-              </h3>
+            <div className={`glass p-8 rounded-3xl transition-all ${editingPostId ? 'border-[#8B5E3C] ring-1 ring-[#8B5E3C]/50' : ''}`}>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-serif flex items-center gap-2">
+                  {editingPostId ? <Pencil className="text-[#8B5E3C]" /> : <Plus className="text-[#8B5E3C]" />}
+                  {editingPostId ? "Editar Postagem" : "Nova Postagem"}
+                </h3>
+                {editingPostId && (
+                  <button onClick={cancelEditPost} className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white flex items-center gap-1">
+                    <X className="w-4 h-4" /> Cancelar Edição
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <input placeholder="Título" value={newPost.title} onChange={e => setNewPost({ ...newPost, title: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none" />
                 <input placeholder="Categoria" value={newPost.category} onChange={e => setNewPost({ ...newPost, category: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none" />
@@ -1597,20 +1611,7 @@ export default function Admin() {
                   {editingPostId ? "Atualizar Artigo" : "Publicar Artigo"}
                 </button>
                 {editingPostId && (
-                  <button onClick={() => {
-                    setEditingPostId(null);
-                    setNewPost({
-                      title: "",
-                      category: "",
-                      excerpt: "",
-                      content: "",
-                      imageUrl: "",
-                      imageAlt: "",
-                      videoUrl: "",
-                      videoKeywords: "",
-                      metaKeywords: ""
-                    });
-                  }} className="px-8 py-3 glass rounded-full font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+                  <button onClick={cancelEditPost} className="px-8 py-3 glass rounded-full font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
                     Cancelar
                   </button>
                 )}
