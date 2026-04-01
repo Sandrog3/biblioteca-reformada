@@ -15,6 +15,11 @@ interface SiteSettings {
   heroImage: string;
   logoUrl?: string;
   footerLogoUrl?: string;
+  footerTitle?: string;
+  footerSubtitle?: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
+  youtubeUrl?: string;
   slogan?: string;
   marqueeItems: string;
   whatsappNumber: string;
@@ -157,6 +162,11 @@ export default function LandingPage() {
           heroImage: data.hero_image || '',
           logoUrl: data.logo_url || '',
           footerLogoUrl: data.footer_logo_url || '',
+          footerTitle: data.footer_title || '',
+          footerSubtitle: data.footer_subtitle || '',
+          instagramUrl: data.instagram_url || '',
+          facebookUrl: data.facebook_url || '',
+          youtubeUrl: data.youtube_url || '',
           slogan: data.slogan || '',
           marqueeItems: data.marquee_items || '',
           whatsappNumber: data.whatsapp_number || '',
@@ -1182,21 +1192,35 @@ export default function LandingPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 mb-12 md:mb-32">
             <div className="lg:col-span-5">
-              <div className="flex items-center gap-2 mb-6 md:mb-8">
+              <div className="flex items-center gap-4 mb-6 md:mb-8">
                 <img 
                   src={settings?.footerLogoUrl || settings?.logoUrl || '/logo.png'} 
                   alt="Biblioteca Reformada Logo" 
                   className="h-10 md:h-12 object-contain" 
                   referrerPolicy="no-referrer" 
                 />
+                <div className="flex flex-col justify-center">
+                  <span className="text-xl md:text-2xl font-serif font-bold tracking-tighter text-[#8B5E3C] uppercase">
+                    {settings?.footerTitle || 'BIBLIOTECA'}
+                  </span>
+                  <span className="text-sm md:text-base font-serif font-bold tracking-[0.2em] text-white -mt-1 uppercase">
+                    {settings?.footerSubtitle || 'REFORMADA'}
+                  </span>
+                </div>
               </div>
               <p className="text-white/40 text-lg md:text-xl font-light leading-relaxed max-w-md mb-8 md:mb-10">
                 Dedicados a promover a glória de Deus através da boa literatura cristã. Curadoria fiel às Escrituras e à tradição reformada.
               </p>
               <div className="flex gap-4 md:gap-6">
-                <a href="#" className="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-[#8B5E3C] transition-colors"><Instagram className="w-4 h-4 md:w-5 md:h-5" /></a>
-                <a href="#" className="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-[#8B5E3C] transition-colors"><Youtube className="w-4 h-4 md:w-5 md:h-5" /></a>
-                <a href="#" className="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-[#8B5E3C] transition-colors"><Facebook className="w-4 h-4 md:w-5 md:h-5" /></a>
+                {settings?.instagramUrl && (
+                  <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-[#8B5E3C] transition-colors"><Instagram className="w-4 h-4 md:w-5 md:h-5" /></a>
+                )}
+                {settings?.youtubeUrl && (
+                  <a href={settings.youtubeUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-[#8B5E3C] transition-colors"><Youtube className="w-4 h-4 md:w-5 md:h-5" /></a>
+                )}
+                {settings?.facebookUrl && (
+                  <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-[#8B5E3C] transition-colors"><Facebook className="w-4 h-4 md:w-5 md:h-5" /></a>
+                )}
               </div>
             </div>
 

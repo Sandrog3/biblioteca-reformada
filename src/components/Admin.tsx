@@ -48,7 +48,12 @@ export default function Admin() {
     marqueeItems: "",
     metaTitle: "",
     metaDescription: "",
-    metaKeywords: ""
+    metaKeywords: "",
+    footerTitle: "",
+    footerSubtitle: "",
+    instagramUrl: "",
+    facebookUrl: "",
+    youtubeUrl: ""
   });
 
   // Posts State
@@ -412,7 +417,12 @@ export default function Admin() {
           marqueeItems: data.marquee_items || "",
           metaTitle: data.meta_title || "",
           metaDescription: data.meta_description || "",
-          metaKeywords: data.meta_keywords || ""
+          metaKeywords: data.meta_keywords || "",
+          footerTitle: data.footer_title || "",
+          footerSubtitle: data.footer_subtitle || "",
+          instagramUrl: data.instagram_url || "",
+          facebookUrl: data.facebook_url || "",
+          youtubeUrl: data.youtube_url || ""
         });
       }
     };
@@ -1437,6 +1447,59 @@ export default function Admin() {
                   onChange={e => setSiteSettings({ ...siteSettings, whatsappNumber: e.target.value })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
                 />
+              </div>
+
+              <div className="pt-6 border-t border-white/5 space-y-6">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-[#8B5E3C]">Rodapé e Redes Sociais</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Título do Rodapé</label>
+                    <input
+                      value={siteSettings.footerTitle}
+                      onChange={e => setSiteSettings({ ...siteSettings, footerTitle: e.target.value })}
+                      placeholder="Ex: BIBLIOTECA"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Subtítulo do Rodapé</label>
+                    <input
+                      value={siteSettings.footerSubtitle}
+                      onChange={e => setSiteSettings({ ...siteSettings, footerSubtitle: e.target.value })}
+                      placeholder="Ex: REFORMADA"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Instagram (URL)</label>
+                    <input
+                      value={siteSettings.instagramUrl}
+                      onChange={e => setSiteSettings({ ...siteSettings, instagramUrl: e.target.value })}
+                      placeholder="https://instagram.com/seu_perfil"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Facebook (URL)</label>
+                    <input
+                      value={siteSettings.facebookUrl}
+                      onChange={e => setSiteSettings({ ...siteSettings, facebookUrl: e.target.value })}
+                      placeholder="https://facebook.com/sua_pagina"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">YouTube (URL)</label>
+                    <input
+                      value={siteSettings.youtubeUrl}
+                      onChange={e => setSiteSettings({ ...siteSettings, youtubeUrl: e.target.value })}
+                      placeholder="https://youtube.com/c/seu_canal"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-6 border-t border-white/5 space-y-6">

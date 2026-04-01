@@ -199,6 +199,11 @@ app.post('/api/settings', verifyAdmin, async (req: any, res: any) => {
       meta_title: settingsData.metaTitle,
       meta_description: settingsData.metaDescription,
       meta_keywords: settingsData.metaKeywords,
+      footer_title: settingsData.footerTitle,
+      footer_subtitle: settingsData.footerSubtitle,
+      instagram_url: settingsData.instagramUrl,
+      facebook_url: settingsData.facebookUrl,
+      youtube_url: settingsData.youtubeUrl,
       updated_at: new Date().toISOString()
     });
 
