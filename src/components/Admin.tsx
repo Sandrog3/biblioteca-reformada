@@ -42,6 +42,7 @@ export default function Admin() {
     heroSubtitle: "",
     heroImage: "",
     logoUrl: "",
+    footerLogoUrl: "",
     slogan: "",
     whatsappNumber: "",
     marqueeItems: "",
@@ -232,6 +233,8 @@ export default function Admin() {
       setSiteSettings(prev => ({ ...prev, heroImage: url }));
     } else if (type === 'logo') {
       setSiteSettings(prev => ({ ...prev, logoUrl: url }));
+    } else if (type === 'footerLogo') {
+      setSiteSettings(prev => ({ ...prev, footerLogoUrl: url }));
     } else if (type === 'category') {
       if (fileType === 'image') setNewCategory(prev => ({ ...prev, imageUrl: url }));
     }
@@ -403,6 +406,7 @@ export default function Admin() {
           heroSubtitle: data.hero_subtitle || "",
           heroImage: data.hero_image || "",
           logoUrl: data.logo_url || "",
+          footerLogoUrl: data.footer_logo_url || "",
           slogan: data.slogan || "",
           whatsappNumber: data.whatsapp_number || "",
           marqueeItems: data.marquee_items || "",
@@ -544,7 +548,7 @@ export default function Admin() {
     setConfirmDialog({ message, onConfirm });
   };
 
-  const handleBrandingUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'hero' | 'logo') => {
+  const handleBrandingUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'hero' | 'logo' | 'footerLogo') => {
     return handleFileUpload(e, type, 'image');
   };
 
@@ -1331,6 +1335,32 @@ export default function Admin() {
                     ) : isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
                     {isUploading ? "..." : "Upload"}
                     <input type="file" accept="image/*" onChange={(e) => handleBrandingUpload(e, 'logo')} className="hidden" disabled={isUploading} />
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Logo do Rodapé (Footer)</label>
+                <p className="text-[10px] text-white/20 mb-3">Versão alternativa do logo (Ex: monocromática para combinar com o fundo escuro do rodapé)</p>
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                  {siteSettings.footerLogoUrl && (
+                    <div className="w-12 h-12 rounded-lg border border-white/10 overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center p-2">
+                      <img src={siteSettings.footerLogoUrl} alt="Footer Logo Preview" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                    </div>
+                  )}
+                  <input
+                    value={siteSettings.footerLogoUrl}
+                    onChange={e => setSiteSettings({ ...siteSettings, footerLogoUrl: e.target.value })}
+                    placeholder="https://seudominio.com/imagens/logo-branca.png"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-[#8B5E3C] outline-none"
+                  />
+                  <label className="cursor-pointer px-6 py-3 glass rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest relative overflow-hidden">
+                    {uploadProgress['footerLogo-image'] !== undefined ? (
+                      <div className="absolute inset-0 bg-[#8B5E3C]/20 flex items-center justify-center">
+                        <span className="text-[10px]">{uploadProgress['footerLogo-image']}%</span>
+                      </div>
+                    ) : isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
+                    {isUploading ? "..." : "Upload"}
+                    <input type="file" accept="image/*" onChange={(e) => handleBrandingUpload(e, 'footerLogo')} className="hidden" disabled={isUploading} />
                   </label>
                 </div>
               </div>

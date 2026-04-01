@@ -155,6 +155,7 @@ export default function LandingPage() {
           heroSubtitle: data.hero_subtitle || '',
           heroImage: data.hero_image || '',
           logoUrl: data.logo_url || '',
+          footerLogoUrl: data.footer_logo_url || '',
           slogan: data.slogan || '',
           marqueeItems: data.marquee_items || '',
           whatsappNumber: data.whatsapp_number || '',
@@ -1181,12 +1182,12 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 mb-12 md:mb-32">
             <div className="lg:col-span-5">
               <div className="flex items-center gap-2 mb-6 md:mb-8">
-                <div className="w-10 h-10 bg-[#8B5E3C] rounded-lg flex items-center justify-center">
-                  <BookMarked className="text-white w-6 h-6" />
-                </div>
-                <span className="text-xl md:text-2xl font-serif font-bold tracking-tighter">
-                  BIBLIOTECA<span className="text-[#8B5E3C]">REFORMADA</span>
-                </span>
+                <img 
+                  src={settings?.footerLogoUrl || settings?.logoUrl || '/logo.png'} 
+                  alt="Biblioteca Reformada Logo" 
+                  className="h-10 md:h-12 object-contain" 
+                  referrerPolicy="no-referrer" 
+                />
               </div>
               <p className="text-white/40 text-lg md:text-xl font-light leading-relaxed max-w-md mb-8 md:mb-10">
                 Dedicados a promover a glória de Deus através da boa literatura cristã. Curadoria fiel às Escrituras e à tradição reformada.
