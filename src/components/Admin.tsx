@@ -466,13 +466,13 @@ export default function Admin() {
         id: String(d.id || ''),
         title: d.title || '',
         description: d.description || '',
-        characteristics: Array.isArray(d.characteristics) ? d.characteristics.join('\n') : (d.characteristics || ''),
+        characteristics: d.characteristics || '',
         buyUrl: d.buy_url || d.buyUrl || '',
-        images: Array.isArray(d.images) ? d.images.join('\n') : (d.images || ''),
+        images: d.image_url || d.images || '',
         imageAlt: d.image_alt || d.imageAlt || '',
         videoUrl: d.video_url || d.videoUrl || '',
-        videoKeywords: d.video_keywords || d.videoKeywords || '',
-        metaKeywords: d.meta_keywords || d.metaKeywords || '',
+        videoKeywords: '', // Coluna descontinuada
+        metaKeywords: d.seo_keywords || d.metaKeywords || '',
         badge: d.badge || '',
         createdAt: d.created_at || ''
       })));
@@ -929,24 +929,23 @@ export default function Admin() {
       const productPayload = {
         title: newProduct.title,
         description: newProduct.description,
-        characteristics: newProduct.characteristics.split('\n').filter(c => c.trim()),
+        characteristics: newProduct.characteristics, // Enviar como Texto puro preservando quebras de linha
         buy_url: newProduct.buyUrl,
-        images: newProduct.images.split('\n').filter(i => i.trim()),
+        image_url: newProduct.images, // Mapeado para image_url no banco
         image_alt: newProduct.imageAlt,
         video_url: newProduct.videoUrl,
-        video_keywords: newProduct.videoKeywords,
-        meta_keywords: newProduct.metaKeywords,
+        seo_keywords: newProduct.metaKeywords + (newProduct.videoKeywords ? `, ${newProduct.videoKeywords}` : ''),
         badge: newProduct.badge,
         is_featured: newProduct.isFeatured === true,
         is_offer: newProduct.isOffer === true
       };
 
       if (editingProductId) {
-        await supabase.from('products').update({ ...productPayload, updated_at: new Date().toISOString() }).eq("id", editingProductId);
+        await supabase.from('products').update(productPayload).eq("id", editingProductId);
         setEditingProductId(null);
         showNotification("Produto atualizado!");
       } else {
-        await supabase.from('products').insert({ ...productPayload, created_at: new Date().toISOString() });
+        await supabase.from('products').insert(productPayload);
         showNotification("Produto adicionado!");
       }
       setNewProduct({
