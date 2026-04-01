@@ -1140,7 +1140,7 @@ export default function LandingPage() {
                       </div>
                     </header>
 
-                    <div className="rich-text-content">
+                    <div className="rich-text-content px-8 md:px-12 max-w-3xl mx-auto text-lg leading-[2] text-white/80">
                       <div
                         dangerouslySetInnerHTML={{
                           __html: DOMPurify.sanitize(selectedPost.content || selectedPost.excerpt)

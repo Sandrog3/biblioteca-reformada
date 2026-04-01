@@ -414,22 +414,6 @@ export default function Admin() {
     };
     fetchAdminSettings();
 
-    const fetchPosts = async () => {
-      const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-      if (data) setPosts(data.map((d: any) => ({
-        id: String(d.id || ''),
-        title: d.title || '',
-        category: d.category || '',
-        excerpt: d.excerpt || '',
-        content: d.content || '',
-        imageUrl: d.image_url || d.imageUrl || '',
-        imageAlt: d.image_alt || d.imageAlt || '',
-        videoUrl: d.video_url || d.videoUrl || '',
-        videoKeywords: d.video_keywords || d.videoKeywords || '',
-        metaKeywords: d.meta_keywords || d.metaKeywords || '',
-        createdAt: d.created_at || ''
-      })));
-    };
     fetchPosts();
 
     const fetchSupabaseBooks = async () => {
@@ -460,23 +444,6 @@ export default function Admin() {
     fetchSupabaseBooks();
 
     fetchCategories();
-    const fetchProducts = async () => {
-      const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
-      if (data) setProducts(data.map((d: any) => ({
-        id: String(d.id || ''),
-        title: d.title || '',
-        description: d.description || '',
-        characteristics: d.characteristics || '',
-        buyUrl: d.buy_url || d.buyUrl || '',
-        images: (d.image_url || d.images || '').split('\n').filter((i: string) => i.trim()),
-        imageAlt: d.image_alt || d.imageAlt || '',
-        videoUrl: d.video_url || d.videoUrl || '',
-        videoKeywords: '', // Coluna descontinuada
-        metaKeywords: d.seo_keywords || d.metaKeywords || '',
-        badge: d.badge || '',
-        createdAt: d.created_at || ''
-      })));
-    };
     fetchProducts();
     // Observação: movido fetchUsersList para um useEffect independente
 
@@ -606,6 +573,41 @@ export default function Admin() {
     }
   };
 
+  const fetchPosts = async () => {
+    const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+    if (data) setPosts(data.map((d: any) => ({
+      id: String(d.id || ''),
+      title: d.title || '',
+      category: d.category || '',
+      excerpt: d.excerpt || '',
+      content: d.content || '',
+      imageUrl: d.image_url || d.imageUrl || '',
+      imageAlt: d.image_alt || d.imageAlt || '',
+      videoUrl: d.video_url || d.videoUrl || '',
+      videoKeywords: d.video_keywords || d.videoKeywords || '',
+      metaKeywords: d.meta_keywords || d.metaKeywords || '',
+      createdAt: d.created_at || ''
+    })));
+  };
+
+  const fetchProducts = async () => {
+    const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+    if (data) setProducts(data.map((d: any) => ({
+      id: String(d.id || ''),
+      title: d.title || '',
+      description: d.description || '',
+      characteristics: d.characteristics || '',
+      buyUrl: d.buy_url || d.buyUrl || '',
+      images: (d.image_url || d.images || '').split('\n').filter((i: string) => i.trim()),
+      imageAlt: d.image_alt || d.imageAlt || '',
+      videoUrl: d.video_url || d.videoUrl || '',
+      videoKeywords: '', // Coluna descontinuada
+      metaKeywords: d.seo_keywords || d.metaKeywords || '',
+      badge: d.badge || '',
+      createdAt: d.created_at || ''
+    })));
+  };
+
   const addPost = async () => {
     if (!newPost.title || !newPost.category) {
       showNotification("Título e Categoria são obrigatórios.", 'error');
@@ -627,11 +629,14 @@ export default function Admin() {
       if (editingPostId) {
         await supabase.from("posts").update({ ...postPayload, updated_at: new Date().toISOString() }).eq("id", editingPostId);
         setEditingPostId(null);
-        showNotification("Postagem atualizada!");
+        showNotification("Postagem atualizada com sucesso!");
       } else {
         await supabase.from("posts").insert({ ...postPayload, created_at: new Date().toISOString() });
-        showNotification("Postagem adicionada!");
+        showNotification("Cadastrado com sucesso!");
       }
+      
+      await fetchPosts();
+      
       setNewPost({
         title: "",
         category: "",
@@ -943,11 +948,14 @@ export default function Admin() {
       if (editingProductId) {
         await supabase.from('products').update(productPayload).eq("id", editingProductId);
         setEditingProductId(null);
-        showNotification("Produto atualizado!");
+        showNotification("Produto atualizado com sucesso!");
       } else {
         await supabase.from('products').insert(productPayload);
-        showNotification("Produto adicionado!");
+        showNotification("Cadastrado com sucesso!");
       }
+      
+      await fetchProducts();
+      
       setNewProduct({
         title: "",
         description: "",
