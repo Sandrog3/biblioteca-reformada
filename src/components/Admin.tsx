@@ -270,7 +270,7 @@ export default function Admin() {
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'book' | 'product' | 'post' | 'hero' | 'logo' | 'category',
+    type: 'book' | 'product' | 'post' | 'hero' | 'logo' | 'category' | 'footerLogo',
     fileType: 'image' | 'video'
   ) => {
     const file = e.target.files?.[0];
@@ -294,7 +294,7 @@ export default function Admin() {
       const fileName = `${Date.now()}.${file.name.split('.').pop()}`;
 
       let basePath = '';
-      if (type === 'hero' || type === 'logo') {
+      if (type === 'hero' || type === 'logo' || type === 'footerLogo') {
         basePath = `branding/${type}`;
       } else if (type === 'book') {
         basePath = 'books/capas';
