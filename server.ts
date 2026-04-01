@@ -192,6 +192,7 @@ app.post('/api/settings', verifyAdmin, async (req: any, res: any) => {
       hero_subtitle: settingsData.heroSubtitle,
       hero_image: settingsData.heroImage,
       logo_url: settingsData.logoUrl,
+      footer_logo_url: settingsData.footerLogoUrl,
       slogan: settingsData.slogan,
       marquee_items: settingsData.marqueeItems,
       whatsapp_number: settingsData.whatsappNumber,
